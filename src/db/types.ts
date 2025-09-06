@@ -27,6 +27,14 @@ export interface Card {
   playerName: string;
   cardType: string;
   setId: number;
+}
+
+export interface CardWithSet {
+  id: number;
+  cardNumber: number;
+  playerName: string;
+  cardType: string;
+  setId: number;
   set: TradingCardSet;
 }
 
