@@ -1,21 +1,23 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
-import { relations } from 'drizzle-orm';
-import { Sport } from '../shared/types';
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { relations } from "drizzle-orm";
+import { Sport } from "../shared/types";
 
-export const sets = sqliteTable('sets', {
-  id: integer('id').primaryKey(),
-  name: text('name').notNull(),
-  year: text('year').notNull(),
-  sourceFile: text('source_file').notNull(),
-  sport: text('sport').notNull(),
+export const sets = sqliteTable("sets", {
+  id: integer("id").primaryKey(),
+  name: text("name").notNull(),
+  year: text("year").notNull(),
+  sourceFile: text("source_file").notNull(),
+  sport: text("sport").notNull(),
 });
 
-export const cards = sqliteTable('cards', {
-  id: integer('id').primaryKey(),
-  cardNumber: integer('card_number').notNull(),
-  playerName: text('player_name').notNull(),
-  cardType: text('card_type').notNull(),
-  setId: integer('set_id').notNull().references(() => sets.id),
+export const cards = sqliteTable("cards", {
+  id: integer("id").primaryKey(),
+  cardNumber: integer("card_number").notNull(),
+  playerName: text("player_name").notNull(),
+  cardType: text("card_type").notNull(),
+  setId: integer("set_id")
+    .notNull()
+    .references(() => sets.id),
 });
 
 // Define relations

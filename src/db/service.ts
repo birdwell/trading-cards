@@ -1,6 +1,12 @@
 import { db, sets, cards } from "./index";
 import { eq, like, and } from "drizzle-orm";
-import { CreateSetData, CreateCardData, Card, TradingCardSet, SetStats } from "./types";
+import {
+  CreateSetData,
+  CreateCardData,
+  Card,
+  TradingCardSet,
+  SetStats,
+} from "./types";
 
 class TradingCardService {
   // TradingCardSet operations
@@ -10,7 +16,9 @@ class TradingCardService {
       return set as TradingCardSet;
     },
 
-    async findBySourceFile(sourceFile: string): Promise<TradingCardSet | undefined> {
+    async findBySourceFile(
+      sourceFile: string
+    ): Promise<TradingCardSet | undefined> {
       const [set] = await db
         .select()
         .from(sets)
@@ -35,7 +43,10 @@ class TradingCardService {
     },
 
     async findByYear(year: string): Promise<TradingCardSet[]> {
-      return (await db.select().from(sets).where(eq(sets.year, year))) as TradingCardSet[];
+      return (await db
+        .select()
+        .from(sets)
+        .where(eq(sets.year, year))) as TradingCardSet[];
     },
   };
 

@@ -38,3 +38,9 @@ export interface SetStats {
   cardTypes: string[];
   players: string[];
 }
+
+export interface CardsFromLLM {
+  cardNumber: number;
+  playerName: string;
+  cardType: string;
+}

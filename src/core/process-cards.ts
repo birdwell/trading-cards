@@ -3,11 +3,10 @@ import ExcelJS from "exceljs";
 import { generateObject } from "ai";
 import { z } from "zod";
 import { google } from "@ai-sdk/google";
-import { tradingCards } from "../db/service";
-import { getSetName } from "../utils/get-set-name";
 import logger from "../shared/logger";
 import { Sport } from "../shared/types";
 import { Card } from "../db/types";
+import { createCards } from "./create-cards";
 
 const googleApiModel = google("models/gemini-1.5-flash-latest");
 
@@ -42,45 +41,15 @@ export default async function processCards(
     Output a JSON array of objects, each with keys: cardNumber (integer), playerName (string), cardType (string).
   `;
 
-  const { object } = await generateObject({
+  const { object: cards } = await generateObject({
     model: googleApiModel,
     system: systemPrompt,
     prompt: csvData,
     schema: cardsSchema,
   });
 
-  if (object.length > 0) {
-    const fileName = filePath.split("/").pop() || filePath;
-    const existingSet = await tradingCards.sets.findBySourceFile(fileName);
-
-    let setId: number;
-    if (existingSet) {
-      setId = existingSet.id;
-      logger.info(`Using existing set: ${existingSet.name} (ID: ${setId})`);
-    } else {
-      const setInfo = getSetName(fileName);
-
-      const newSet = await tradingCards.sets.create({
-        name: setInfo.name,
-        year: setInfo.year,
-        sourceFile: fileName,
-        sport: sport,
-      });
-      setId = newSet.id;
-      logger.info(`Created new set: ${newSet.name} (ID: ${setId})`);
-    }
-
-    const cardsToInsert = object.map((card) => ({
-      ...card,
-      setId,
-    }));
-
-    const savedCards = await tradingCards.cards.create(cardsToInsert);
-    logger.info(`Saved ${savedCards.length} cards to database`);
-
-    // Return cards with set information using efficient setId query
-    const cardsWithSet = await tradingCards.cards.findBySetIdWithSet(setId);
-    return cardsWithSet;
+  if (cards.length > 0) {
+    return await createCards(filePath, sport, cards);
   } else {
     logger.warn("No cards found for the specified sport.");
     return [];
