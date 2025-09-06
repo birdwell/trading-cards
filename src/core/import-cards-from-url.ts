@@ -1,8 +1,8 @@
-import { downloadFile } from "./download-file";
-import { getXlsxLink } from "./get-xlsx-link";
+import { downloadFile } from "../services/download-file";
+import { getXlsxLink } from "../services/get-xlsx-link";
 import processCards from "./process-cards";
-import logger from "./logger";
-import { getSport } from "./get-sport";
+import logger from "../shared/logger";
+import { getSport } from "../utils/get-sport";
 
 export async function importCardsFromUrl(url: string) {
   logger.info(`Importing cards from URL: ${url}`);

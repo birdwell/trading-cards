@@ -3,11 +3,11 @@ import ExcelJS from "exceljs";
 import { generateObject } from "ai";
 import { z } from "zod";
 import { google } from "@ai-sdk/google";
-import { tradingCards } from "./db/service";
-import { getSetName } from "./get-set-name";
-import logger from "./logger";
-import { Sport } from "./types";
-import { Card } from "./db/types";
+import { tradingCards } from "../db/service";
+import { getSetName } from "../utils/get-set-name";
+import logger from "../shared/logger";
+import { Sport } from "../shared/types";
+import { Card } from "../db/types";
 
 const googleApiModel = google("models/gemini-1.5-flash-latest");
 

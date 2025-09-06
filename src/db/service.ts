@@ -1,41 +1,41 @@
 import { db, sets, cards } from "./index";
 import { eq, like, and } from "drizzle-orm";
-import { CreateSetData, CreateCardData, Card, Set, SetStats } from "./types";
+import { CreateSetData, CreateCardData, Card, TradingCardSet, SetStats } from "./types";
 
 class TradingCardService {
-  // Set operations
+  // TradingCardSet operations
   sets = {
-    async create(data: CreateSetData): Promise<Set> {
+    async create(data: CreateSetData): Promise<TradingCardSet> {
       const [set] = await db.insert(sets).values(data).returning();
-      return set as Set;
+      return set as TradingCardSet;
     },
 
-    async findBySourceFile(sourceFile: string): Promise<Set | undefined> {
+    async findBySourceFile(sourceFile: string): Promise<TradingCardSet | undefined> {
       const [set] = await db
         .select()
         .from(sets)
         .where(eq(sets.sourceFile, sourceFile));
-      return set as Set;
+      return set as TradingCardSet;
     },
 
-    async findById(id: number): Promise<Set | undefined> {
+    async findById(id: number): Promise<TradingCardSet | undefined> {
       const [set] = await db.select().from(sets).where(eq(sets.id, id));
-      return set as Set;
+      return set as TradingCardSet;
     },
 
-    async findByName(name: string): Promise<Set[]> {
+    async findByName(name: string): Promise<TradingCardSet[]> {
       return (await db
         .select()
         .from(sets)
-        .where(like(sets.name, `%${name}%`))) as Set[];
+        .where(like(sets.name, `%${name}%`))) as TradingCardSet[];
     },
 
-    async findAll(): Promise<Set[]> {
-      return (await db.select().from(sets)) as Set[];
+    async findAll(): Promise<TradingCardSet[]> {
+      return (await db.select().from(sets)) as TradingCardSet[];
     },
 
-    async findByYear(year: string): Promise<Set[]> {
-      return (await db.select().from(sets).where(eq(sets.year, year))) as Set[];
+    async findByYear(year: string): Promise<TradingCardSet[]> {
+      return (await db.select().from(sets).where(eq(sets.year, year))) as TradingCardSet[];
     },
   };
 
@@ -126,8 +126,8 @@ class TradingCardService {
 
     if (!setInfo) return null;
 
-    const cardTypes = [...new Set(allCards.map((card) => card.cardType))];
-    const players = [...new Set(allCards.map((card) => card.playerName))];
+    const cardTypes = [...new Set(allCards.map((card: any) => card.cardType))];
+    const players = [...new Set(allCards.map((card: any) => card.playerName))];
 
     return {
       set: setInfo,

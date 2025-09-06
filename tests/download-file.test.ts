@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as fs from "fs";
 import { PassThrough } from "stream";
-import { downloadFile } from "../src/download-file";
+import { downloadFile } from "../src/services/download-file";
 
 jest.mock("axios");
 jest.mock("fs");
@@ -31,7 +31,9 @@ describe("downloadFile", () => {
     // Wait for the download to complete
     const result = await downloadPromise;
 
-    expect(fs.createWriteStream).toHaveBeenCalledWith("spreadsheet-downloads/file.xlsx");
+    expect(fs.createWriteStream).toHaveBeenCalledWith(
+      "spreadsheet-downloads/file.xlsx"
+    );
     expect(result).toBe("spreadsheet-downloads/file.xlsx");
   });
 });

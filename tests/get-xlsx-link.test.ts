@@ -1,5 +1,5 @@
 import { chromium } from "playwright";
-import { getXlsxLink } from "../src/get-xlsx-link";
+import { getXlsxLink } from "../src/services/get-xlsx-link";
 
 describe("getXlsxLink", () => {
   it("should return the xlsx link if found", async () => {

@@ -13,7 +13,7 @@ export interface CreateCardData {
   setId: number;
 }
 
-export interface Set {
+export interface TradingCardSet {
   id: number;
   name: string;
   year: string;
@@ -27,11 +27,11 @@ export interface Card {
   playerName: string;
   cardType: string;
   setId: number;
-  set: Set;
+  set: TradingCardSet;
 }
 
 export interface SetStats {
-  set: Set;
+  set: TradingCardSet;
   totalCards: number;
   uniqueCardTypes: number;
   uniquePlayers: number;

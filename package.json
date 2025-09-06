@@ -2,12 +2,16 @@
   "scripts": {
     "start": "npx tsx src/index.ts",
     "dev": "npx tsx src/index.ts",
+    "server": "npx tsx src/api/server.ts",
+    "server:dev": "npx tsx --watch src/api/server.ts",
     "build": "npx tsc",
     "test": "jest"
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.12",
     "@libsql/client": "^0.15.14",
+    "@trpc/client": "^11.5.1",
+    "@trpc/server": "^11.5.1",
     "@types/axios": "^0.9.36",
     "@types/node": "^24.3.1",
     "ai": "^5.0.34",

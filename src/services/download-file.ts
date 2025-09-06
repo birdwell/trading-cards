@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
-import logger from "./logger";
+import logger from "../shared/logger";
 
 export async function downloadFile(fileUrl: string): Promise<string> {
   const folder = "./spreadsheet-downloads";

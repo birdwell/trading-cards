@@ -1,6 +1,6 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
-import { Sport } from '../types';
+import { Sport } from '../shared/types';
 
 export const sets = sqliteTable('sets', {
   id: integer('id').primaryKey(),
