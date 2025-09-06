@@ -2,13 +2,14 @@ import { downloadFile } from "./download-file";
 import { getXlsxLink } from "./get-xlsx-link";
 import processCards from "./process-cards";
 import logger from "./logger";
-import { Sport } from "./types";
+import { getSport } from "./get-sport";
 
-export async function importCardsFromUrl(
-  url: string,
-  sport: Sport = Sport.Football
-) {
+export async function importCardsFromUrl(url: string) {
   logger.info(`Importing cards from URL: ${url}`);
+
+  // Automatically determine sport from URL
+  const sport = getSport(url);
+  logger.info(`Detected sport: ${sport}`);
 
   const xlsxLink = await getXlsxLink(url);
 
