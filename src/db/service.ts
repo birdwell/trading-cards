@@ -53,6 +53,9 @@ class TradingCardService {
   // Card operations
   cards = {
     async create(cardsData: CreateCardData[]) {
+      if (cardsData.length === 0) {
+        return [];
+      }
       return await db.insert(cards).values(cardsData).returning();
     },
 
@@ -71,12 +74,24 @@ class TradingCardService {
     },
 
     async findBySetIdWithSet(setId: number): Promise<Card[]> {
-      return (await db.query.cards.findMany({
-        where: eq(cards.setId, setId),
-        with: {
-          set: true,
-        },
-      })) as Card[];
+      return (await db
+        .select({
+          id: cards.id,
+          cardNumber: cards.cardNumber,
+          playerName: cards.playerName,
+          cardType: cards.cardType,
+          setId: cards.setId,
+          set: {
+            id: sets.id,
+            name: sets.name,
+            year: sets.year,
+            sourceFile: sets.sourceFile,
+            sport: sets.sport,
+          },
+        })
+        .from(cards)
+        .innerJoin(sets, eq(cards.setId, sets.id))
+        .where(eq(cards.setId, setId))) as Card[];
     },
 
     async findByPlayer(playerName: string) {

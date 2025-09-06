@@ -14,7 +14,9 @@ export async function createCards(
   let setId: number;
 
   if (existingSet) {
-    logger.info(`Set already exists: ${existingSet.name} (ID: ${existingSet.id}). Skipping card creation.`);
+    logger.info(
+      `Set already exists: ${existingSet.name} (ID: ${existingSet.id}). Skipping card creation.`
+    );
     return [];
   } else {
     const setInfo = getSetName(fileName);
@@ -39,6 +41,6 @@ export async function createCards(
   logger.info(`Saved ${savedCards.length} cards to database`);
 
   // Return cards with set information using efficient setId query
-  const cardsWithSet = await tradingCards.cards.findBySetIdWithSet(setId);
+  const cardsWithSet = await tradingCards.cards.findBySetId(setId);
   return cardsWithSet;
 }

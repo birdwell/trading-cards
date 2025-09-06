@@ -16,7 +16,7 @@ async function testImportEndpoint() {
     logger.info("Testing tRPC import endpoint...");
 
     const result = await trpc.import.mutate({
-      url: "https://www.beckett.com/news/2024-panini-prizm-football-cards/",
+      url: "https://www.beckett.com/news/2024-25-donruss-basketball-cards/",
     });
 
     logger.info(
