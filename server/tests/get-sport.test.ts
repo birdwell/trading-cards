@@ -1,5 +1,5 @@
-import { getSport } from "../src/utils/get-sport";
-import { Sport } from "../src/shared/types";
+import { Sport } from "../shared/types";
+import { getSport } from "../utils/get-sport";
 
 describe("getSport", () => {
   test("should detect football from Beckett football URLs", () => {
@@ -29,5 +29,10 @@ describe("getSport", () => {
   test("should default to football for URLs without keywords", () => {
     const url = "https://www.beckett.com/news/2024-panini-cards/";
     expect(getSport(url)).toBe(Sport.Football);
+  });
+
+  test("should be basketball when no keywords are present", () => {
+    const url = "https://www.beckett.com/news/2024-25-donruss-basketball-cards/";
+    expect(getSport(url)).toBe(Sport.Basketball);
   });
 });

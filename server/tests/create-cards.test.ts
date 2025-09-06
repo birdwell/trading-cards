@@ -1,11 +1,12 @@
-import { createCards } from "../src/core/create-cards";
-import { tradingCards } from "../src/db/service";
-import { db, sets, cards } from "../src/db/index";
-import { CardsFromLLM } from "../src/db/types";
+
 import { eq, inArray, like } from "drizzle-orm";
+import { CardsFromLLM } from "../db/types";
+import { cards, db, sets } from "../db";
+import { createCards } from "../core/create-cards";
+import { tradingCards } from "../db/service";
 
 // Mock only the logger to avoid console noise during tests
-jest.mock("../src/shared/logger");
+jest.mock("../shared/logger");
 
 describe("createCards Integration Tests", () => {
   let testSetIds: number[] = [];

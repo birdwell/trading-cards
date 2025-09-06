@@ -1,6 +1,6 @@
-import { tradingCards, TradingCardService } from "../src/db/service";
-import { db, sets, cards } from "../src/db/index";
-import { CreateSetData, CreateCardData } from "../src/db/types";
+import { tradingCards, TradingCardService } from "../db/service";
+import { db, sets, cards } from "../db/index";
+import { CreateSetData, CreateCardData } from "../db/types";
 import { eq, inArray, like } from "drizzle-orm";
 
 describe("TradingCardService Integration Tests", () => {
@@ -45,10 +45,17 @@ describe("TradingCardService Integration Tests", () => {
   // Cleanup function to remove test data
   const cleanupTestData = async () => {
     try {
-      // Delete test cards
+      // Delete test cards first (to avoid foreign key constraints)
       if (testCardIds.length > 0) {
         await db.delete(cards).where(inArray(cards.id, testCardIds));
         testCardIds = [];
+      }
+
+      // Delete all cards with test set pattern first
+      const testSets = await db.select({ id: sets.id }).from(sets).where(like(sets.sourceFile, "test-%"));
+      if (testSets.length > 0) {
+        const testSetIds = testSets.map(set => set.id);
+        await db.delete(cards).where(inArray(cards.setId, testSetIds));
       }
 
       // Delete test set

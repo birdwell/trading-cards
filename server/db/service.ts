@@ -6,6 +6,7 @@ import {
   Card,
   TradingCardSet,
   SetStats,
+  CardWithSet,
 } from "./types";
 
 class TradingCardService {
@@ -73,7 +74,7 @@ class TradingCardService {
       return await db.select().from(cards).where(eq(cards.setId, setId));
     },
 
-    async findBySetIdWithSet(setId: number): Promise<Card[]> {
+    async findBySetIdWithSet(setId: number): Promise<CardWithSet[]> {
       return (await db
         .select({
           id: cards.id,
@@ -91,7 +92,7 @@ class TradingCardService {
         })
         .from(cards)
         .innerJoin(sets, eq(cards.setId, sets.id))
-        .where(eq(cards.setId, setId))) as Card[];
+        .where(eq(cards.setId, setId))) as CardWithSet[];
     },
 
     async findByPlayer(playerName: string) {
@@ -123,12 +124,12 @@ class TradingCardService {
       return await db.select().from(cards);
     },
 
-    async findAllWithSets(): Promise<Card[]> {
+    async findAllWithSets(): Promise<CardWithSet[]> {
       return (await db.query.cards.findMany({
         with: {
           set: true,
         },
-      })) as Card[];
+      })) as CardWithSet[];
     },
   };
 

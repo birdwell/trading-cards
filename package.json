@@ -1,10 +1,13 @@
 {
   "scripts": {
-    "start": "npx tsx src/index.ts",
-    "dev": "npx tsx src/index.ts",
-    "server": "npx tsx src/api/server.ts",
-    "server:dev": "npx tsx --watch src/api/server.ts",
-    "build": "npx tsc",
+    "start": "npx tsx server/index.ts",
+    "dev": "npx tsx server/index.ts",
+    "server": "npx tsx server/api/server.ts",
+    "server:dev": "npx tsx --watch server/api/server.ts",
+    "client:dev": "cd client && npm run dev",
+    "client:build": "cd client && npm run build",
+    "client:start": "cd client && npm run start",
+    "build": "npx tsc && cd client && npm run build",
     "test": "jest"
   },
   "dependencies": {

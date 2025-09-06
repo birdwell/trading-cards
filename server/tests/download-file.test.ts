@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as fs from "fs";
 import { PassThrough } from "stream";
-import { downloadFile } from "../src/services/download-file";
+import { downloadFile } from "../services/download-file";
 
 jest.mock("axios");
 jest.mock("fs");

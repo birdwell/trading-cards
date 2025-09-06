@@ -1,4 +1,4 @@
-import { getSetName } from "../src/utils/get-set-name";
+import { getSetName } from "../utils/get-set-name";
 
 describe("getSetName", () => {
   it("should parse year range format with NBA", () => {
