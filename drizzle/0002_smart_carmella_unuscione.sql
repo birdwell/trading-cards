@@ -1,0 +1,1 @@
+ALTER TABLE `sets` ADD `sport` text NOT NULL DEFAULT 'Basketball';

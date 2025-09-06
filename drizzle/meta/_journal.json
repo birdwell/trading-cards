@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1757182575260,
+      "tag": "0000_elite_nick_fury",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1757183607969,
+      "tag": "0001_wooden_bloodstrike",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1757185596013,
+      "tag": "0002_smart_carmella_unuscione",
+      "breakpoints": true
+    }
+  ]
+}
