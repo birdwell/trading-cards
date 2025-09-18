@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { trpc } from "../utils/trpc";
 import Header from "../components/Header";
+import Navigation from "../components/Navigation";
 import DataStateWrapper from "../components/DataStateWrapper";
 import TradingCardSetGrid from "../components/TradingCardSetGrid";
 
@@ -23,6 +24,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      <Navigation />
       <div className="container mx-auto px-4 py-8">
         <Header />
         <main>

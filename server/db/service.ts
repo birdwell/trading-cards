@@ -50,6 +50,15 @@ class TradingCardService {
         .where(eq(sets.year, year))) as TradingCardSet[];
     },
 
+    async update(id: number, data: { name?: string; sport?: string }): Promise<TradingCardSet | undefined> {
+      const [updatedSet] = await db
+        .update(sets)
+        .set(data)
+        .where(eq(sets.id, id))
+        .returning();
+      return updatedSet as TradingCardSet;
+    },
+
     async delete(id: number): Promise<boolean> {
       try {
         // First delete all cards in the set

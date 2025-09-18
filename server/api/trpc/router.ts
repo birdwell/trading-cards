@@ -120,6 +120,32 @@ export const appRouter = router({
         throw new Error(`Failed to update card ownership: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }),
+
+  updateSet: procedure
+    .input(z.object({
+      setId: z.number(),
+      name: z.string().min(1, "Set name is required"),
+      sport: z.string().min(1, "Sport is required")
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        logger.info(`Updating set ${input.setId} with name: ${input.name}, sport: ${input.sport}`);
+        const updatedSet = await tradingCards.sets.update(input.setId, {
+          name: input.name,
+          sport: input.sport
+        });
+        
+        if (!updatedSet) {
+          throw new Error(`Set with ID ${input.setId} not found`);
+        }
+        
+        logger.info(`Successfully updated set ${input.setId}`);
+        return updatedSet;
+      } catch (error) {
+        logger.error(`Error updating set: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(`Failed to update set: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }),
 });
 
 // Export type definition of API

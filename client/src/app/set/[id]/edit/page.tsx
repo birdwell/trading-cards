@@ -1,13 +1,13 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { trpc } from "../../../utils/trpc";
-import Header from "../../../components/Header";
-import Navigation from "../../../components/Navigation";
-import DataStateWrapper from "../../../components/DataStateWrapper";
-import { SetDetailsContent } from "../../../features/set/components";
+import { trpc } from "../../../../utils/trpc";
+import Header from "../../../../components/Header";
+import Navigation from "../../../../components/Navigation";
+import DataStateWrapper from "../../../../components/DataStateWrapper";
+import { EditSetContent } from "../../../../features/set/components";
 
-export default function SetDetailsPage() {
+export default function EditSetPage() {
   const params = useParams();
   const setId = parseInt(params.id as string);
 
@@ -34,16 +34,14 @@ export default function SetDetailsPage() {
       <Navigation />
       <div className="container mx-auto px-4 py-8">
         <Header />
-        
+
         <main>
           <DataStateWrapper
             isLoading={isLoading}
             error={error?.message}
             data={data}
           >
-            {data && (
-              <SetDetailsContent set={data.set} cards={data.cards} />
-            )}
+            {data && <EditSetContent set={data.set} />}
           </DataStateWrapper>
         </main>
       </div>
