@@ -1,34 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { api } from "../utils/trpc";
-import { TradingCardSet } from "../types";
+import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
+import { trpc } from "../utils/trpc";
 import Header from "../components/Header";
-import LoadingSpinner from "../components/LoadingSpinner";
-import ErrorMessage from "../components/ErrorMessage";
-import EmptyState from "../components/EmptyState";
+import DataStateWrapper from "../components/DataStateWrapper";
 import TradingCardSetGrid from "../components/TradingCardSetGrid";
 
 export default function Home() {
-  const [sets, setSets] = useState<TradingCardSet[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: sets, isLoading, error } = trpc.getSets.useQuery();
+  const utils = trpc.useUtils();
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchSets = async () => {
-      try {
-        setIsLoading(true);
-        const data = await api.getSets();
-        setSets(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch sets");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const handleSetDeleted = () => {
+    // Invalidate and refetch the sets query to update the UI
+    utils.getSets.invalidate();
+  };
 
-    fetchSets();
-  }, []);
+  const handleImportClick = () => {
+    router.push("/import");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
@@ -36,19 +27,26 @@ export default function Home() {
         <Header />
         <main>
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">
-              Current Sets
-            </h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
+                Current Sets
+              </h2>
+              <button
+                onClick={handleImportClick}
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+              >
+                <Plus className="w-5 h-5" />
+                Import New Set
+              </button>
+            </div>
 
-            {isLoading && <LoadingSpinner />}
-
-            {error && <ErrorMessage error={error} />}
-
-            {!isLoading && !error && sets.length === 0 && <EmptyState />}
-
-            {!isLoading && !error && sets.length > 0 && (
-              <TradingCardSetGrid sets={sets} />
-            )}
+            <DataStateWrapper
+              isLoading={isLoading}
+              error={error?.message}
+              data={sets}
+            >
+              <TradingCardSetGrid sets={sets!} onSetDeleted={handleSetDeleted} />
+            </DataStateWrapper>
           </section>
         </main>
       </div>

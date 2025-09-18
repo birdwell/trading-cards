@@ -49,6 +49,19 @@ class TradingCardService {
         .from(sets)
         .where(eq(sets.year, year))) as TradingCardSet[];
     },
+
+    async delete(id: number): Promise<boolean> {
+      try {
+        // First delete all cards in the set
+        await db.delete(cards).where(eq(cards.setId, id));
+        
+        // Then delete the set
+        await db.delete(sets).where(eq(sets.id, id));
+        return true;
+      } catch (error) {
+        throw new Error(`Failed to delete set: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    },
   };
 
   // Card operations
@@ -130,6 +143,15 @@ class TradingCardService {
           set: true,
         },
       })) as CardWithSet[];
+    },
+
+    async updateOwnership(cardId: number, isOwned: boolean) {
+      const [updatedCard] = await db
+        .update(cards)
+        .set({ isOwned })
+        .where(eq(cards.id, cardId))
+        .returning();
+      return updatedCard;
     },
   };
 

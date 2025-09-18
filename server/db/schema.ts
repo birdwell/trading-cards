@@ -18,6 +18,7 @@ export const cards = sqliteTable("cards", {
   setId: integer("set_id")
     .notNull()
     .references(() => sets.id),
+  isOwned: integer("is_owned", { mode: "boolean" }).notNull().default(false),
 });
 
 // Define relations

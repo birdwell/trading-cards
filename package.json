@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "start": "npx tsx server/index.ts",
-    "dev": "npx tsx server/index.ts",
+    "start": "npm run server & npm run client:start",
+    "dev": "npm run server:dev & npm run client:dev",
     "server": "npx tsx server/api/server.ts",
     "server:dev": "npx tsx --watch server/api/server.ts",
     "client:dev": "cd client && npm run dev",

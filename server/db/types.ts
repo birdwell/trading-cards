@@ -11,6 +11,7 @@ export interface CreateCardData {
   playerName: string;
   cardType: string;
   setId: number;
+  isOwned?: boolean;
 }
 
 export interface TradingCardSet {
@@ -27,6 +28,7 @@ export interface Card {
   playerName: string;
   cardType: string;
   setId: number;
+  isOwned: boolean;
 }
 
 export interface CardWithSet {
@@ -35,6 +37,7 @@ export interface CardWithSet {
   playerName: string;
   cardType: string;
   setId: number;
+  isOwned: boolean;
   set: TradingCardSet;
 }
 

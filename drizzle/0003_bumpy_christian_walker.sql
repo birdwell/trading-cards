@@ -1,0 +1,1 @@
+ALTER TABLE `cards` ADD `is_owned` integer DEFAULT false NOT NULL;

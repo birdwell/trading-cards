@@ -3,6 +3,34 @@ import { tradingCards } from "../db/service";
 import logger from "../shared/logger";
 import { getSetName } from "../utils/get-set-name";
 
+/**
+ * Creates trading cards and their associated set in the database.
+ * 
+ * This function handles the complete workflow of creating trading cards:
+ * 1. Extracts the filename from the provided file path
+ * 2. Checks if a set already exists for this source file
+ * 3. If set exists, skips creation and returns empty array
+ * 4. If set doesn't exist, creates a new set with parsed name and year
+ * 5. Associates all cards with the set and saves them to the database
+ * 6. Returns the saved cards with complete set information
+ * 
+ * @param filePath - The full path to the source file containing card data
+ * @param sport - The sport category for the trading cards (e.g., "baseball", "football")
+ * @param cards - Array of card data parsed from LLM processing
+ * @returns Promise that resolves to an array of saved cards with set information,
+ *          or empty array if the set already exists
+ * 
+ * @throws Will throw an error if database operations fail
+ * 
+ * @example
+ * ```typescript
+ * const cards = await createCards(
+ *   "/path/to/1989-topps-baseball.json",
+ *   "baseball",
+ *   parsedCardData
+ * );
+ * ```
+ */
 export async function createCards(
   filePath: string,
   sport: string,

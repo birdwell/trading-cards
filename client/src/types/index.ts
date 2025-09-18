@@ -5,3 +5,22 @@ export interface TradingCardSet {
   sourceFile: string;
   sport: string;
 }
+
+export interface Card {
+  id: number;
+  cardNumber: number;
+  playerName: string;
+  cardType: string;
+  setId: number;
+  isOwned: boolean;
+}
+
+export interface CardWithSet {
+  id: number;
+  cardNumber: number;
+  playerName: string;
+  cardType: string;
+  setId: number;
+  isOwned: boolean;
+  set: TradingCardSet;
+}
