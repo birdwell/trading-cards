@@ -1,4 +1,5 @@
 import { TradingCardSet } from "@/types";
+import { Badge } from "@/components/ui/badge";
 
 interface SetHeaderProps {
   set: TradingCardSet;
@@ -9,16 +10,16 @@ export default function SetHeader({ set }: SetHeaderProps) {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      <h1 className="text-2xl font-bold mb-2">
         {set.name}
       </h1>
-      <div className="flex items-center gap-4 text-gray-600 dark:text-gray-300">
+      <div className="flex items-center gap-3 text-muted-foreground">
         <span className="flex items-center gap-1">
           {sportIcon} {set.sport}
         </span>
-        <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm font-medium px-2 py-1 rounded">
+        <Badge variant="secondary">
           {set.year}
-        </span>
+        </Badge>
       </div>
     </div>
   );
