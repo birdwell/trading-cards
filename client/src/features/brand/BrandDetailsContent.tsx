@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { BrandHeader, BrandOverallStats, BrandTabs, BrandSportTab } from "./components";
+import { BrandHeader, BrandTabs, BrandSportTab } from "./components";
 
 interface BrandDetailsProps {
   brandData: {
@@ -72,8 +72,6 @@ export default function BrandDetailsContent({ brandData }: BrandDetailsProps) {
         overallStats={brandData.overallStats}
         onBackToBrands={handleBackToBrands}
       />
-
-      <BrandOverallStats overallStats={brandData.overallStats} />
 
       <BrandTabs>
         <BrandSportTab

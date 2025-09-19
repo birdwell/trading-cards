@@ -11,39 +11,39 @@ interface BrandOverallStatsProps {
 
 export default function BrandOverallStats({ overallStats }: BrandOverallStatsProps) {
   return (
-    <Card className="mb-8">
-      <CardContent className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <Card className="mb-4">
+      <CardContent className="p-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Package className="w-5 h-5 text-primary" />
-              <span className="text-2xl font-bold">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Package className="w-3 h-3 text-primary" />
+              <span className="text-lg font-semibold">
                 {overallStats.totalSets}
               </span>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs text-muted-foreground">
               Total Sets
             </div>
           </div>
           <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Target className="w-5 h-5 text-green-500" />
-              <span className="text-2xl font-bold">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Target className="w-3 h-3 text-green-500" />
+              <span className="text-lg font-semibold">
                 {overallStats.totalOwnedCards}
               </span>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs text-muted-foreground">
               Cards Owned
             </div>
           </div>
           <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <TrendingUp className="w-5 h-5 text-purple-500" />
-              <span className="text-2xl font-bold">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <TrendingUp className="w-3 h-3 text-purple-500" />
+              <span className="text-lg font-semibold">
                 {overallStats.totalCards}
               </span>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs text-muted-foreground">
               Total Cards
             </div>
           </div>

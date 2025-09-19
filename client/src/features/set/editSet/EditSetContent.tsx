@@ -67,30 +67,34 @@ export default function EditSetContent({ set, cards }: EditSetContentProps) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Set Information */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
-          <EditSetHeader setId={set.id} setName={set.name} />
-
-          <EditSetForm
-            name={name}
-            sport={sport}
-            isUpdating={isUpdating}
-            onNameChange={setName}
-            onSportChange={setSport}
-            onSubmit={handleSubmit}
-          />
-
+    <div className="max-w-6xl mx-auto">
+      {/* Edit Set Form - Top Row */}
+      <div className="mb-6">
+        <EditSetHeader setId={set.id} setName={set.name} />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <EditSetForm
+              name={name}
+              sport={sport}
+              isUpdating={isUpdating}
+              onNameChange={setName}
+              onSportChange={setSport}
+              onSubmit={handleSubmit}
+            />
+          </div>
+          
           {updateResult && (
-            <UpdateResult result={updateResult} setId={set.id} />
+            <div className="lg:col-span-1">
+              <UpdateResult result={updateResult} setId={set.id} />
+            </div>
           )}
         </div>
+      </div>
 
-        {/* Cards Management */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
-          <EditSetCards cards={cards} setId={set.id} />
-        </div>
+      {/* Cards List - Bottom Row */}
+      <div>
+        <EditSetCards cards={cards} setId={set.id} />
       </div>
     </div>
   );

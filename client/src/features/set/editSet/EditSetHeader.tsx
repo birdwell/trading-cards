@@ -1,5 +1,6 @@
 import { Edit3, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface EditSetHeaderProps {
   setId: number;
@@ -14,29 +15,32 @@ export default function EditSetHeader({ setId, setName }: EditSetHeaderProps) {
   };
 
   return (
-    <div className="mb-8">
+    <div className="mb-6">
       {/* Back Button */}
-      <button
+      <Button
+        variant="ghost"
         onClick={handleBackToSet}
-        className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-colors mb-6"
+        className="gap-2 mb-4 px-0 text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back
-      </button>
+        Back to Set
+      </Button>
 
       {/* Header Content */}
-      <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
-          <Edit3 className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+      <div className="flex items-center gap-3 mb-6">
+        <div className="inline-flex items-center justify-center w-10 h-10 bg-primary/10 rounded-full">
+          <Edit3 className="w-5 h-5 text-primary" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Edit Set
-        </h1>
-        {setName && (
-          <p className="text-lg text-gray-700 dark:text-gray-300 mb-2">
-            {setName}
-          </p>
-        )}
+        <div>
+          <h1 className="text-2xl font-bold mb-1">
+            Edit Set
+          </h1>
+          {setName && (
+            <p className="text-muted-foreground">
+              {setName}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
