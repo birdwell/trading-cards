@@ -40,19 +40,21 @@ function getQueryClient() {
 }
 
 function getUrl() {
-  // In production, use environment variable or same domain (Railway monolith deployment)
-  // In development, use localhost
+  // In production, use environment variable or backend port
+  // In development, use localhost with backend port
+  const backendPort = process.env.NEXT_PUBLIC_BACKEND_PORT || '3002';
+  
   if (typeof window !== "undefined") {
     // Browser environment
     if (window.location.hostname === "localhost") {
-      return "http://localhost:3002";
+      return `http://localhost:${backendPort}`;
     } else {
-      // Production - Railway deploys both on same domain/port, so use relative path
-      return process.env.NEXT_PUBLIC_API_URL || `${window.location.protocol}//${window.location.hostname}`;
+      // Production - use environment variable or construct URL with backend port
+      return process.env.NEXT_PUBLIC_API_URL || `${window.location.protocol}//${window.location.hostname}:${backendPort}`;
     }
   }
   // Server-side rendering - use environment variable or default
-  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
+  return process.env.NEXT_PUBLIC_API_URL || `http://localhost:${backendPort}`;
 }
 
 export function TRPCProvider(

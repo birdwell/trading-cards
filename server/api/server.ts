@@ -43,8 +43,8 @@ const server = createHTTPServer({
   },
 });
 
-// Railway provides PORT environment variable, fallback to 3002 for local development
-const PORT = process.env.PORT || 3002;
+// Use BACKEND_PORT environment variable, fallback to Railway's PORT, then 3002 for local development
+const PORT = process.env.BACKEND_PORT || process.env.PORT || 3002;
 const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
 
 logger.info({

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "next start"
+    "start": "next start -p ${FRONTEND_PORT:-3000}"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.0.0",

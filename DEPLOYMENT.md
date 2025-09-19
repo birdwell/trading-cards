@@ -17,6 +17,9 @@ Railway is perfect for this full-stack application and CAN deploy both frontend 
    ```
    NODE_ENV=production
    DATABASE_URL=file:./database.db
+   BACKEND_PORT=3002
+   FRONTEND_PORT=3000
+   NEXT_PUBLIC_BACKEND_PORT=3002
    ```
 6. **Important**: Railway will automatically assign a PORT - don't set it manually
 7. Enable persistent storage for your SQLite database file
@@ -24,7 +27,7 @@ Railway is perfect for this full-stack application and CAN deploy both frontend 
 
 ### Step 2: How It Works
 - Railway runs `npm run build` which builds both the Next.js client and TypeScript server
-- Railway runs `npm start` which starts both the tRPC server (port 3002) and Next.js client (port 3000) using `concurrently`
+- Railway runs `npm start` which starts both the tRPC server (BACKEND_PORT) and Next.js client (FRONTEND_PORT) using `concurrently`
 - The Next.js client automatically detects it's in production and connects to the tRPC server on the same domain
 - Both services run simultaneously in the same Railway container
 
