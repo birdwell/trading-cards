@@ -2,35 +2,40 @@
 
 ## Railway Deployment (Recommended)
 
-Railway is perfect for this full-stack application as it can host both the tRPC server and Next.js client together.
+Railway is perfect for this full-stack application. We'll deploy the backend and frontend as separate services.
 
 ### Prerequisites
 1. GitHub account with your code pushed to a repository
 2. Railway account (sign up at [railway.app](https://railway.app))
 
-### Step 1: Prepare for Deployment
-1. **Database**: Your SQLite database will work perfectly in production. Railway supports persistent storage for SQLite files.
-
-2. **Environment Variables**: Set these in Railway:
-   ```
-   NODE_ENV=production
-   PORT=3002
-   DATABASE_URL=file:./database.db
-   ```
-
-### Step 2: Deploy to Railway
+### Step 1: Deploy Backend (tRPC Server)
 1. Go to [railway.app](https://railway.app) and sign in
 2. Click "New Project" → "Deploy from GitHub repo"
 3. Select your trading-cards repository
 4. Railway will automatically detect it's a Node.js project
-5. Set environment variables in the Railway dashboard
-6. Enable persistent storage for your SQLite database file
+5. Set these environment variables in Railway:
+   ```
+   NODE_ENV=production
+   DATABASE_URL=file:./database.db
+   ```
+6. **Important**: Railway will automatically assign a PORT - don't set it manually
+7. Enable persistent storage for your SQLite database file
+8. Your backend will be available at: `https://your-app-name.up.railway.app`
+
+### Step 2: Deploy Frontend (Next.js Client)
+1. In the same Railway project, add a new service
+2. Point it to the `/client` directory of your repository
+3. Set these environment variables:
+   ```
+   NEXT_PUBLIC_API_URL=https://your-backend-url.up.railway.app
+   ```
+4. Railway will automatically build and deploy your Next.js app
 
 ### Step 3: Database Setup
 Your existing SQLite database will work perfectly:
 
 1. **Persistent Storage**: Railway will maintain your `database.db` file between deployments
-2. **Migrations**: Your existing Drizzle migrations will run automatically
+2. **Migrations**: Your database setup script will run automatically on startup
 3. **No Changes Needed**: Your current database configuration is production-ready
 
 ## Alternative: Render Deployment

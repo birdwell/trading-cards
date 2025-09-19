@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "node scripts/setup-db.js && npm run server & npm run client:start",
+    "start": "node scripts/setup-db.js && npm run server",
+    "start:full": "npm run server & npm run client:start",
     "dev": "npm run server:dev & npm run client:dev",
     "server": "npx tsx server/api/server.ts",
     "server:dev": "npx tsx --watch server/api/server.ts",
