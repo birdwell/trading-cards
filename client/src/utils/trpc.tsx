@@ -40,7 +40,7 @@ function getQueryClient() {
 }
 
 function getUrl() {
-  // In production, use environment variable or backend port
+  // In production, use environment variable or same domain with /trpc path
   // In development, use localhost with backend port
   const backendPort = process.env.NEXT_PUBLIC_BACKEND_PORT || '3002';
   
@@ -49,8 +49,8 @@ function getUrl() {
     if (window.location.hostname === "localhost") {
       return `http://localhost:${backendPort}`;
     } else {
-      // Production - use environment variable or construct URL with backend port
-      return process.env.NEXT_PUBLIC_API_URL || `${window.location.protocol}//${window.location.hostname}:${backendPort}`;
+      // Production - Railway deployment, use same domain with /trpc path
+      return process.env.NEXT_PUBLIC_API_URL || `${window.location.protocol}//${window.location.hostname}/trpc`;
     }
   }
   // Server-side rendering - use environment variable or default

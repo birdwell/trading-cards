@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "node scripts/setup-db.js && concurrently \"npm run server\" \"npm run client:start\"",
+    "start": "node scripts/setup-db.js && concurrently \"BACKEND_PORT=3002 npm run server\" \"PORT=${PORT:-3000} npm run client:start\"",
     "dev": "npm run server:dev & npm run client:dev",
     "server": "npx tsx server/api/server.ts",
     "server:dev": "npx tsx --watch server/api/server.ts",
