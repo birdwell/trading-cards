@@ -37,7 +37,7 @@ export default function BrandSportSection({ sport, sets, onSetClick }: BrandSpor
 
   return (
     <div className="mb-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
         {getSportIcon(sport)} {getSportName(sport)}
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/utils/trpc";
 import Navigation from "@/components/Navigation";
-import { Upload, ExternalLink } from "lucide-react";
+import { Upload, ExternalLink, CheckCircle, XCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function ImportPage() {
   const [url, setUrl] = useState("");
@@ -60,67 +64,64 @@ export default function ImportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-background">
       <Navigation />
       <div className="container mx-auto px-4 py-8">
         <main>
           <div className="max-w-2xl mx-auto">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+            <Card className="p-8">
               <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
-                  <Upload className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
+                  <Upload className="w-8 h-8 text-primary" />
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h1 className="text-3xl font-bold mb-2">
                   Import New Set
                 </h1>
-                <p className="text-gray-600 dark:text-gray-300">
+                <p className="text-muted-foreground">
                   Enter a Beckett URL to import a new trading card set
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label
-                    htmlFor="url"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >
+                  <Label htmlFor="url">
                     Beckett URL
-                  </label>
+                  </Label>
                   <div className="relative">
-                    <input
+                    <Input
                       type="url"
                       id="url"
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
                       placeholder="https://www.beckett.com/news/..."
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                       disabled={isImporting}
                       required
+                      className="pr-10"
                     />
-                    <ExternalLink className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <ExternalLink className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   </div>
-                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  <p className="mt-2 text-sm text-muted-foreground">
                     Import trading card checklists from Beckett articles
                   </p>
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={isImporting || !url.trim()}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full gap-2"
                 >
                   {isImporting ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
                       Importing...
                     </>
                   ) : (
                     <>
-                      <Upload className="w-5 h-5" />
+                      <Upload className="w-4 h-4" />
                       Import Set
                     </>
                   )}
-                </button>
+                </Button>
               </form>
 
               {importResult && (
@@ -201,7 +202,7 @@ export default function ImportPage() {
                   </div>
                 </div>
               )}
-            </div>
+            </Card>
           </div>
         </main>
       </div>

@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
 import ProgressBar from "@/components/ProgressBar";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface TradingCardSetCardProps {
   setWithStats: SetWithStats;
@@ -39,36 +42,38 @@ export default function TradingCardSetCard({
   const { set, stats } = setWithStats;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
-      <div className="flex justify-between items-start mb-4">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+    <Card className="hover:shadow-lg transition-shadow duration-200">
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
+        <h3 className="text-xl font-semibold">
           {set.name}
         </h3>
         <div className="flex items-center gap-2">
-          <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm font-medium px-2 py-1 rounded">
+          <Badge variant="secondary">
             {set.year}
-          </span>
-          <button
+          </Badge>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleDeleteClick}
             disabled={isDeleting}
-            className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 p-1 rounded transition-colors duration-200 disabled:opacity-50"
+            className="text-destructive hover:text-destructive/80 h-8 w-8 p-0"
             title="Delete set"
           >
-            <Trash2 className="w-5 h-5" />
-          </button>
+            <Trash2 className="w-4 h-4" />
+          </Button>
         </div>
-      </div>
+      </CardHeader>
 
-      <div className="space-y-3">
+      <CardContent className="space-y-3">
         <div className="space-y-2">
           <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-600 dark:text-gray-400">Progress</span>
-            <span className="text-gray-900 dark:text-white font-medium">
+            <span className="text-muted-foreground">Progress</span>
+            <span className="font-medium">
               {stats.ownedCards}/{stats.totalCards}
             </span>
           </div>
           <ProgressBar current={stats.ownedCards} total={stats.totalCards} />
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+          <p className="text-xs text-muted-foreground text-center">
             {stats.totalCards > 0
               ? `${Math.round(
                   (stats.ownedCards / stats.totalCards) * 100
@@ -76,7 +81,7 @@ export default function TradingCardSetCard({
               : "No cards"}
           </p>
         </div>
-      </div>
+      </CardContent>
 
       {showConfirmDelete && (
         <ConfirmDeleteDialog
@@ -89,14 +94,14 @@ export default function TradingCardSetCard({
         />
       )}
 
-      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-        <button
+      <CardFooter className="pt-4">
+        <Button
           onClick={handleViewCards}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
+          className="w-full"
         >
           View Cards
-        </button>
-      </div>
-    </div>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

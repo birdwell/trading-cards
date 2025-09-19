@@ -7,6 +7,7 @@ import { useTRPC } from "@/utils/trpc";
 import Navigation from "@/components/Navigation";
 import DataStateWrapper from "@/components/DataStateWrapper";
 import SportTabs from "@/components/SportTabs";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const trpc = useTRPC();
@@ -28,22 +29,22 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-background">
       <Navigation />
       <div className="container mx-auto px-4 py-8">
         <main>
           <section className="mb-8">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                Current Sets
-              </h2>
-              <button
-                onClick={handleImportClick}
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-              >
-                <Plus className="w-5 h-5" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">Trading Card Sets</h1>
+                <p className="text-muted-foreground">
+                  Manage and track your trading card collection progress
+                </p>
+              </div>
+              <Button onClick={handleImportClick} className="gap-2">
+                <Plus className="w-4 h-4" />
                 Import New Set
-              </button>
+              </Button>
             </div>
 
             <DataStateWrapper

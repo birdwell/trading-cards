@@ -19,10 +19,11 @@ export default function BrandDetailsPage() {
 
   if (!brandName) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen bg-background">
+        <Navigation />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
-            <p className="text-red-500 text-lg">Invalid brand name</p>
+            <p className="text-destructive text-lg">Invalid brand name</p>
           </div>
         </div>
       </div>
@@ -30,7 +31,7 @@ export default function BrandDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-background">
       <Navigation />
       <div className="container mx-auto px-4 py-8">
         <main>

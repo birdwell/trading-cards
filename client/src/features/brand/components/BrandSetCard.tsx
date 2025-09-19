@@ -1,4 +1,6 @@
 import BrandProgressBar from "./BrandProgressBar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface BrandSetCardProps {
   set: {
@@ -22,30 +24,32 @@ export default function BrandSetCard({ set, stats, onSetClick }: BrandSetCardPro
   const percentage = calculatePercentage(stats.ownedCards, stats.totalCards);
 
   return (
-    <div
+    <Card
       onClick={() => onSetClick(set.id)}
-      className="bg-white dark:bg-gray-800 rounded-lg p-6 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md"
+      className="cursor-pointer hover:shadow-md transition-all duration-200 hover:border-primary/50"
     >
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-          {set.year}
-        </span>
-        <span className="text-sm font-bold text-gray-900 dark:text-white">
-          {percentage}%
-        </span>
-      </div>
-      
-      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-base leading-tight">
-        {set.name}
-      </h4>
-      
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-gray-500 dark:text-gray-400">
-          {stats.ownedCards} of {stats.totalCards} cards
-        </span>
-      </div>
-      
-      <BrandProgressBar percentage={percentage} className="h-3" />
-    </div>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-3">
+          <Badge variant="outline" className="text-primary border-primary">
+            {set.year}
+          </Badge>
+          <span className="text-sm font-bold">
+            {percentage}%
+          </span>
+        </div>
+        
+        <h4 className="font-semibold mb-3 text-base leading-tight">
+          {set.name}
+        </h4>
+        
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm text-muted-foreground">
+            {stats.ownedCards} of {stats.totalCards} cards
+          </span>
+        </div>
+        
+        <BrandProgressBar percentage={percentage} className="h-3" />
+      </CardContent>
+    </Card>
   );
 }
