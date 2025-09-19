@@ -40,8 +40,19 @@ function getQueryClient() {
 }
 
 function getUrl() {
-  // Always point to the separate tRPC server on port 3002
-  return "http://localhost:3002";
+  // In production, use the same domain but different port
+  // In development, use localhost
+  if (typeof window !== "undefined") {
+    // Browser environment
+    if (window.location.hostname === "localhost") {
+      return "http://localhost:3002";
+    } else {
+      // Production - assume server runs on same domain with port 3002
+      return `${window.location.protocol}//${window.location.hostname}:3002`;
+    }
+  }
+  // Server-side rendering - use environment variable or default
+  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 }
 
 export function TRPCProvider(

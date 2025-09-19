@@ -1,14 +1,16 @@
 {
   "scripts": {
-    "start": "npm run server & npm run client:start",
+    "start": "node scripts/setup-db.js && npm run server & npm run client:start",
     "dev": "npm run server:dev & npm run client:dev",
     "server": "npx tsx server/api/server.ts",
     "server:dev": "npx tsx --watch server/api/server.ts",
     "client:dev": "cd client && npm run dev",
     "client:build": "cd client && npm run build",
     "client:start": "cd client && npm run start",
-    "build": "npx tsc && cd client && npm run build",
-    "test": "jest"
+    "build": "npm run client:build && npx tsc",
+    "test": "jest",
+    "postinstall": "cd client && npm install",
+    "db:setup": "node scripts/setup-db.js"
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.12",
