@@ -6,25 +6,25 @@ import { useTRPC } from "@/utils/trpc";
 import Header from "@/components/Header";
 import Navigation from "@/components/Navigation";
 import DataStateWrapper from "@/components/DataStateWrapper";
-import SetDetailsContent from "@/features/set/SetDetailsContent";
+import BrandDetailsContent from "@/features/brand/BrandDetailsContent";
 
-export default function SetDetailsPage() {
+export default function BrandDetailsPage() {
   const params = useParams();
-  const setId = parseInt(params.id as string);
+  const brandName = decodeURIComponent(params.brand as string);
   const trpc = useTRPC();
 
   const { data, isLoading, error } = useQuery({
-    ...trpc.getSetWithCards.queryOptions({ setId }),
-    enabled: !isNaN(setId),
+    ...trpc.getBrandDetails.queryOptions({ brandName }),
+    enabled: !!brandName,
   });
 
-  if (isNaN(setId)) {
+  if (!brandName) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
         <div className="container mx-auto px-4 py-8">
           <Header />
           <div className="text-center py-12">
-            <p className="text-red-500 text-lg">Invalid set ID</p>
+            <p className="text-red-500 text-lg">Invalid brand name</p>
           </div>
         </div>
       </div>
@@ -43,7 +43,7 @@ export default function SetDetailsPage() {
             error={error?.message}
             data={data}
           >
-            {data && <SetDetailsContent set={data.set} cards={data.cards} />}
+            {data && <BrandDetailsContent brandData={data} />}
           </DataStateWrapper>
         </main>
       </div>

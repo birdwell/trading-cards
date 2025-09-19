@@ -2,20 +2,26 @@
 
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-import { trpc } from "../utils/trpc";
-import Header from "../components/Header";
-import Navigation from "../components/Navigation";
-import DataStateWrapper from "../components/DataStateWrapper";
-import TradingCardSetGrid from "../components/TradingCardSetGrid";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTRPC } from "@/utils/trpc";
+import Header from "@/components/Header";
+import Navigation from "@/components/Navigation";
+import DataStateWrapper from "@/components/DataStateWrapper";
+import SportTabs from "@/components/SportTabs";
 
 export default function Home() {
-  const { data: sets, isLoading, error } = trpc.getSets.useQuery();
-  const utils = trpc.useUtils();
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const {
+    data: setsWithStats,
+    isLoading,
+    error,
+  } = useQuery(trpc.getSetsWithStats.queryOptions());
   const router = useRouter();
 
   const handleSetDeleted = () => {
     // Invalidate and refetch the sets query to update the UI
-    utils.getSets.invalidate();
+    queryClient.invalidateQueries({ queryKey: ["getSetsWithStats"] });
   };
 
   const handleImportClick = () => {
@@ -45,9 +51,12 @@ export default function Home() {
             <DataStateWrapper
               isLoading={isLoading}
               error={error?.message}
-              data={sets}
+              data={setsWithStats}
             >
-              <TradingCardSetGrid sets={sets!} onSetDeleted={handleSetDeleted} />
+              <SportTabs
+                setsWithStats={setsWithStats!}
+                onSetDeleted={handleSetDeleted}
+              />
             </DataStateWrapper>
           </section>
         </main>

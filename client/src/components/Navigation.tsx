@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Plus, Edit3 } from "lucide-react";
+import { Home, Plus, Edit3, Package } from "lucide-react";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -41,6 +41,18 @@ export default function Navigation() {
               Import Set
             </Link>
 
+            <Link
+              href="/brands"
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                isActive("/brands")
+                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                  : "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
+            >
+              <Package className="w-4 h-4" />
+              Brands
+            </Link>
+
             {pathname.includes("/set/") && pathname.includes("/edit") && (
               <div className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400">
                 <Edit3 className="w-4 h-4" />
@@ -52,6 +64,13 @@ export default function Navigation() {
               <div className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400">
                 <Edit3 className="w-4 h-4" />
                 Set Details
+              </div>
+            )}
+
+            {pathname.includes("/brands/") && pathname !== "/brands" && (
+              <div className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+                <Package className="w-4 h-4" />
+                Brand Details
               </div>
             )}
           </div>

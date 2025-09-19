@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
-import { trpc } from "../../../utils/trpc";
-import { Card } from "../../../types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTRPC } from "@/utils/trpc";
+import { Card } from "@/types";
 
 interface SetCardProps {
   card: Card;
@@ -9,18 +10,21 @@ interface SetCardProps {
 
 export default function SetCard({ card }: SetCardProps) {
   const [isUpdating, setIsUpdating] = useState(false);
-  const utils = trpc.useUtils();
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
 
-  const updateOwnershipMutation = trpc.updateCardOwnership.useMutation({
+  const updateOwnershipMutation = useMutation(trpc.updateCardOwnership.mutationOptions({
     onMutate: () => setIsUpdating(true),
     onSettled: () => {
       setIsUpdating(false);
-      utils.getSetWithCards.invalidate({ setId: card.setId });
+      queryClient.invalidateQueries({ 
+        queryKey: ['getSetWithCards', { setId: card.setId }] 
+      });
     },
-    onError: (err) => {
+    onError: (err: any) => {
       console.error("Failed to update card ownership:", err);
     },
-  });
+  }));
 
   const handleToggleOwnership = () => {
     updateOwnershipMutation.mutate({

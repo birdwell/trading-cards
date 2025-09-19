@@ -1,4 +1,4 @@
-import { TradingCardSet } from "../../../types";
+import { TradingCardSet } from "@/types";
 
 interface SetHeaderProps {
   set: TradingCardSet;

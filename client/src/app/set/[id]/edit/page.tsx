@@ -1,20 +1,22 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { trpc } from "../../../../utils/trpc";
-import Header from "../../../../components/Header";
-import Navigation from "../../../../components/Navigation";
-import DataStateWrapper from "../../../../components/DataStateWrapper";
-import { EditSetContent } from "../../../../features/set/components";
+import { useQuery } from "@tanstack/react-query";
+import { useTRPC } from "@/utils/trpc";
+import Header from "@/components/Header";
+import Navigation from "@/components/Navigation";
+import DataStateWrapper from "@/components/DataStateWrapper";
+import EditSetContent from "@/features/set/editSet/EditSetContent";
 
 export default function EditSetPage() {
   const params = useParams();
   const setId = parseInt(params.id as string);
+  const trpc = useTRPC();
 
-  const { data, isLoading, error } = trpc.getSetWithCards.useQuery(
-    { setId },
-    { enabled: !isNaN(setId) }
-  );
+  const { data, isLoading, error } = useQuery({
+    ...trpc.getSetWithCards.queryOptions({ setId }),
+    enabled: !isNaN(setId),
+  });
 
   if (isNaN(setId)) {
     return (
@@ -41,7 +43,7 @@ export default function EditSetPage() {
             error={error?.message}
             data={data}
           >
-            {data && <EditSetContent set={data.set} />}
+            {data && <EditSetContent set={data.set} cards={data.cards} />}
           </DataStateWrapper>
         </main>
       </div>

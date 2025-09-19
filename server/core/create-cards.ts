@@ -2,6 +2,7 @@ import { CardsFromLLM } from "../db/types";
 import { tradingCards } from "../db/service";
 import logger from "../shared/logger";
 import { getSetName } from "../utils/get-set-name";
+import { Sport } from "../shared/types";
 
 /**
  * Creates trading cards and their associated set in the database.
@@ -15,7 +16,7 @@ import { getSetName } from "../utils/get-set-name";
  * 6. Returns the saved cards with complete set information
  * 
  * @param filePath - The full path to the source file containing card data
- * @param sport - The sport category for the trading cards (e.g., "baseball", "football")
+ * @param sport - The sport category for the trading cards (Sport enum value)
  * @param cards - Array of card data parsed from LLM processing
  * @returns Promise that resolves to an array of saved cards with set information,
  *          or empty array if the set already exists
@@ -25,15 +26,15 @@ import { getSetName } from "../utils/get-set-name";
  * @example
  * ```typescript
  * const cards = await createCards(
- *   "/path/to/1989-topps-baseball.json",
- *   "baseball",
+ *   "/path/to/1989-topps-basketball.json",
+ *   Sport.Basketball,
  *   parsedCardData
  * );
  * ```
  */
 export async function createCards(
   filePath: string,
-  sport: string,
+  sport: Sport,
   cards: CardsFromLLM[]
 ) {
   const fileName = filePath.split("/").pop() || filePath;

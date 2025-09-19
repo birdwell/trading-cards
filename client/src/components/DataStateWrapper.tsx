@@ -1,7 +1,7 @@
-import React from 'react';
-import LoadingSpinner from './LoadingSpinner';
-import ErrorMessage from './ErrorMessage';
-import EmptyState from './EmptyState';
+import React from "react";
+import LoadingSpinner from "./LoadingSpinner";
+import ErrorMessage from "./ErrorMessage";
+import EmptyState from "./EmptyState";
 
 interface DataStateWrapperProps<T> {
   isLoading: boolean;
@@ -31,12 +31,20 @@ export default function DataStateWrapper<T>({
 
   // Show error state
   if (error) {
-    return <>{errorComponent ? errorComponent(error) : <ErrorMessage error={error} />}</>;
+    return (
+      <>
+        {errorComponent ? (
+          errorComponent(error)
+        ) : (
+          <ErrorMessage error={error} />
+        )}
+      </>
+    );
   }
 
   // Show empty state
   if (isEmpty(data)) {
-    return <>{emptyComponent || <EmptyState />}</>;
+    return <>{emptyComponent || <EmptyState message="No data found" />}</>;
   }
 
   // Show children (the actual data)

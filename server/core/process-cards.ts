@@ -35,7 +35,9 @@ export default async function processCards(
 
   const systemPrompt = `
     You are an expert at parsing sports card checklists.
-    From the following data, extract the rows that are for the "${sport}".
+    From the following data, extract the rows that are for the "${
+      sport == Sport.Basketball ? "Oklahoma City Thunder" : "Dallas Cowboys"
+    }".
     For each card, provide the card number, player name, and the type of card (e.g., "Base", "Rookie").
     The card type is usually in the first column.
     Output a JSON array of objects, each with keys: cardNumber (integer), playerName (string), cardType (string).

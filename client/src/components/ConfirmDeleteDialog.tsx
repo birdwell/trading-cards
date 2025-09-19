@@ -1,6 +1,6 @@
 import { TradingCardSet } from "@/types";
-import { trpc } from "@/utils/trpc";
-import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useTRPC } from "@/utils/trpc";
 
 interface ConfirmDeleteDialogProps {
   set: TradingCardSet;
@@ -19,14 +19,16 @@ export default function ConfirmDeleteDialog({
   setIsDeleting,
   onCancel,
 }: ConfirmDeleteDialogProps) {
-  const deleteSetMutation = trpc.deleteSet.useMutation({
+  const trpc = useTRPC();
+  
+  const deleteSetMutation = useMutation(trpc.deleteSet.mutationOptions({
     onSuccess: () => {
       onSuccess();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       onError(error.message);
     },
-  });
+  }));
 
   const handleDelete = async () => {
     setIsDeleting(true);

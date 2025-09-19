@@ -1,8 +1,9 @@
 export { default as BackButton } from "./BackButton";
 export { default as CardGrid } from "./CardGrid";
-export { default as EditSetContent } from "./EditSetContent";
-export { default as EditSetForm } from "./EditSetForm";
-export { default as EditSetHeader } from "./EditSetHeader";
+export { default as EditSetCards } from "./editSet/EditSetCards";
+export { default as EditSetContent } from "./editSet/EditSetContent";
+export { default as EditSetForm } from "./editSet/EditSetForm";
+export { default as EditSetHeader } from "./editSet/EditSetHeader";
 export { default as SetCard } from "./SetCard";
 export { default as SetDetailsContent } from "./SetDetailsContent";
 export { default as SetHeader } from "./SetHeader";

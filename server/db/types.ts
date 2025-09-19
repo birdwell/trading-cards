@@ -44,6 +44,7 @@ export interface CardWithSet {
 export interface SetStats {
   set: TradingCardSet;
   totalCards: number;
+  ownedCards: number;
   uniqueCardTypes: number;
   uniquePlayers: number;
   cardTypes: string[];

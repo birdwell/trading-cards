@@ -40,6 +40,57 @@ export const appRouter = router({
       }
     }),
 
+  getSetsWithStats: procedure
+    .query(async () => {
+      try {
+        logger.info('Starting getSetsWithStats query');
+        const sets = await tradingCards.sets.findAll();
+        logger.info(`Found ${sets.length} sets, fetching stats for each`);
+        
+        const setsWithStats = await Promise.all(
+          sets.map(async (set) => {
+            try {
+              logger.info(`Fetching stats for set ${set.id}: ${set.name}`);
+              const stats = await tradingCards.getSetStats(set.id);
+              return {
+                set,
+                stats: stats || {
+                  set,
+                  totalCards: 0,
+                  ownedCards: 0,
+                  uniqueCardTypes: 0,
+                  uniquePlayers: 0,
+                  cardTypes: [],
+                  players: []
+                }
+              };
+            } catch (setError) {
+              logger.error(`Error fetching stats for set ${set.id}: ${setError instanceof Error ? setError.message : 'Unknown error'}`);
+              // Return set with empty stats if individual set fails
+              return {
+                set,
+                stats: {
+                  set,
+                  totalCards: 0,
+                  ownedCards: 0,
+                  uniqueCardTypes: 0,
+                  uniquePlayers: 0,
+                  cardTypes: [],
+                  players: []
+                }
+              };
+            }
+          })
+        );
+        logger.info(`Successfully retrieved ${setsWithStats.length} sets with stats`);
+        return setsWithStats;
+      } catch (error) {
+        logger.error(`Error in getSetsWithStats: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        logger.error(`Stack trace: ${error instanceof Error ? error.stack : 'No stack trace'}`);
+        throw new Error(`Failed to fetch sets with stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }),
+
   getSetStats: procedure
     .input(z.object({ setId: z.number() }))
     .query(async ({ input }) => {
@@ -144,6 +195,60 @@ export const appRouter = router({
       } catch (error) {
         logger.error(`Error updating set: ${error instanceof Error ? error.message : 'Unknown error'}`);
         throw new Error(`Failed to update set: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }),
+
+  deleteCard: procedure
+    .input(z.object({ cardId: z.number() }))
+    .mutation(async ({ input }) => {
+      try {
+        logger.info(`Deleting card with ID: ${input.cardId}`);
+        const success = await tradingCards.cards.delete(input.cardId);
+        
+        if (!success) {
+          throw new Error(`Card with ID ${input.cardId} not found`);
+        }
+        
+        logger.info(`Successfully deleted card with ID: ${input.cardId}`);
+        return {
+          success: true,
+          message: `Successfully deleted card with ID ${input.cardId}`
+        };
+      } catch (error) {
+        logger.error(`Error deleting card: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(`Failed to delete card: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }),
+
+  getBrandOverview: procedure
+    .query(async () => {
+      try {
+        logger.info('Fetching brand overview');
+        const brandOverview = await tradingCards.getBrandOverview();
+        logger.info(`Retrieved overview for ${brandOverview.length} brands`);
+        return brandOverview;
+      } catch (error) {
+        logger.error(`Error fetching brand overview: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(`Failed to fetch brand overview: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }),
+
+  getBrandDetails: procedure
+    .input(z.object({ brandName: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        logger.info(`Fetching details for brand: ${input.brandName}`);
+        const brandDetails = await tradingCards.getBrandDetails(input.brandName);
+        
+        if (!brandDetails) {
+          throw new Error(`Brand '${input.brandName}' not found`);
+        }
+        
+        logger.info(`Retrieved details for brand: ${input.brandName}`);
+        return brandDetails;
+      } catch (error) {
+        logger.error(`Error fetching brand details: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(`Failed to fetch brand details: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }),
 });

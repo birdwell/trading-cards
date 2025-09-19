@@ -1,5 +1,6 @@
-import { Card, TradingCardSet } from "../../../types";
+import EmptyState from "@/components/EmptyState";
 import SetCard from "./SetCard";
+import { Card, TradingCardSet } from "@/types";
 
 interface CardGridProps {
   cards: Card[];
@@ -9,11 +10,7 @@ interface CardGridProps {
 export default function CardGrid({ cards, set }: CardGridProps) {
   if (cards.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500 dark:text-gray-400 text-lg">
-          No cards found in this set.
-        </p>
-      </div>
+      <EmptyState message="No cards found in this set." />
     );
   }
 

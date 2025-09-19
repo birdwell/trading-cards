@@ -1,16 +1,17 @@
-import { TradingCardSet } from "../types";
+import { SetWithStats } from "../../types";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
-import ConfirmDeleteDialog from "./ConfirmDeleteDialog";
+import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
+import ProgressBar from "@/components/ProgressBar";
 
 interface TradingCardSetCardProps {
-  set: TradingCardSet;
+  setWithStats: SetWithStats;
   onDeleted?: () => void;
 }
 
 export default function TradingCardSetCard({
-  set,
+  setWithStats,
   onDeleted,
 }: TradingCardSetCardProps) {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -32,10 +33,10 @@ export default function TradingCardSetCard({
   };
 
   const handleViewCards = () => {
-    router.push(`/set/${set.id}`);
+    router.push(`/set/${setWithStats.set.id}`);
   };
 
-  const sportIcon = set.sport.toLowerCase() === "basketball" ? "🏀" : "🏈";
+  const { set, stats } = setWithStats;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6">
@@ -58,10 +59,23 @@ export default function TradingCardSetCard({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <p className="text-gray-600 dark:text-gray-300">
-          {sportIcon} {set.sport}
-        </p>
+      <div className="space-y-3">
+        <div className="space-y-2">
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-gray-600 dark:text-gray-400">Progress</span>
+            <span className="text-gray-900 dark:text-white font-medium">
+              {stats.ownedCards}/{stats.totalCards}
+            </span>
+          </div>
+          <ProgressBar current={stats.ownedCards} total={stats.totalCards} />
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+            {stats.totalCards > 0
+              ? `${Math.round(
+                  (stats.ownedCards / stats.totalCards) * 100
+                )}% complete`
+              : "No cards"}
+          </p>
+        </div>
       </div>
 
       {showConfirmDelete && (
@@ -76,7 +90,7 @@ export default function TradingCardSetCard({
       )}
 
       <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-        <button 
+        <button
           onClick={handleViewCards}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
         >

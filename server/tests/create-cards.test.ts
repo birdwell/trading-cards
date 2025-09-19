@@ -4,6 +4,7 @@ import { CardsFromLLM } from "../db/types";
 import { cards, db, sets } from "../db";
 import { createCards } from "../core/create-cards";
 import { tradingCards } from "../db/service";
+import { Sport } from "../shared/types";
 
 // Mock only the logger to avoid console noise during tests
 jest.mock("../shared/logger");
@@ -68,7 +69,7 @@ describe("createCards Integration Tests", () => {
   describe("when set does not exist", () => {
     it("should create new set and cards", async () => {
       const filePath = "/path/to/test-create-cards-2024-Panini-Prizm-Basketball-Checklist.xlsx";
-      const sport = "Basketball";
+      const sport = Sport.Basketball;
 
       const result = await createCards(filePath, sport, testCardsFromLLM);
 
@@ -109,7 +110,7 @@ describe("createCards Integration Tests", () => {
 
     it("should handle file path extraction correctly", async () => {
       const fullPath = "/Users/test/downloads/test-create-cards-2024-Topps-Chrome-Football-Checklist.xlsx";
-      const sport = "Football";
+      const sport = Sport.Football;
 
       const result = await createCards(fullPath, sport, testCardsFromLLM);
 
@@ -131,7 +132,7 @@ describe("createCards Integration Tests", () => {
 
     it("should handle empty cards array", async () => {
       const filePath = "/path/to/test-create-cards-empty-set.xlsx";
-      const sport = "Basketball";
+      const sport = Sport.Basketball;
 
       const result = await createCards(filePath, sport, []);
 
@@ -146,7 +147,7 @@ describe("createCards Integration Tests", () => {
 
     it("should handle single card", async () => {
       const filePath = "/path/to/test-create-cards-single-card.xlsx";
-      const sport = "Basketball";
+      const sport = Sport.Basketball;
       const singleCard: CardsFromLLM[] = [
         {
           cardNumber: 23,
@@ -174,7 +175,7 @@ describe("createCards Integration Tests", () => {
   describe("when set already exists", () => {
     it("should return empty array and not create duplicate cards", async () => {
       const filePath = "/path/to/test-create-cards-existing-set.xlsx";
-      const sport = "Basketball";
+      const sport = Sport.Basketball;
 
       // First call - should create set and cards
       const firstResult = await createCards(filePath, sport, testCardsFromLLM);
@@ -208,8 +209,8 @@ describe("createCards Integration Tests", () => {
       const basketballFile = "/path/to/test-create-cards-basketball.xlsx";
       const footballFile = "/path/to/test-create-cards-football.xlsx";
 
-      const basketballResult = await createCards(basketballFile, "Basketball", testCardsFromLLM);
-      const footballResult = await createCards(footballFile, "Football", testCardsFromLLM);
+      const basketballResult = await createCards(basketballFile, Sport.Basketball, testCardsFromLLM);
+      const footballResult = await createCards(footballFile, Sport.Football, testCardsFromLLM);
 
       // Track created data for cleanup
       if (basketballResult.length > 0) {
@@ -239,7 +240,7 @@ describe("createCards Integration Tests", () => {
   describe("database integration", () => {
     it("should persist data correctly in database", async () => {
       const filePath = "/path/to/test-create-cards-persistence.xlsx";
-      const sport = "Basketball";
+      const sport = Sport.Basketball;
 
       const result = await createCards(filePath, sport, testCardsFromLLM);
 

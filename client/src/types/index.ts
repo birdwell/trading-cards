@@ -24,3 +24,16 @@ export interface CardWithSet {
   isOwned: boolean;
   set: TradingCardSet;
 }
+
+export interface SetWithStats {
+  set: TradingCardSet;
+  stats: {
+    set: TradingCardSet;
+    totalCards: number;
+    ownedCards: number;
+    uniqueCardTypes: number;
+    uniquePlayers: number;
+    cardTypes: string[];
+    players: string[];
+  };
+}

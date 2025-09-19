@@ -1,12 +1,19 @@
+import { useRouter } from "next/navigation";
+
 interface UpdateResultProps {
   result: {
     success: boolean;
     message: string;
   };
-  onBackToSet: () => void;
+  setId: number;
 }
 
-export default function UpdateResult({ result, onBackToSet }: UpdateResultProps) {
+export default function UpdateResult({ result, setId }: UpdateResultProps) {
+  const router = useRouter();
+
+  const handleBackToSet = () => {
+    router.push(`/set/${setId}`);
+  };
   return (
     <div
       className={`mt-6 p-4 rounded-lg ${
@@ -68,7 +75,7 @@ export default function UpdateResult({ result, onBackToSet }: UpdateResultProps)
           </p>
           {result.success && (
             <button
-              onClick={onBackToSet}
+              onClick={handleBackToSet}
               className="mt-3 text-sm text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 font-medium"
             >
               Back to set →
