@@ -1,7 +1,6 @@
 {
   "scripts": {
-    "start": "node scripts/setup-db.js && npm run server",
-    "start:full": "npm run server & npm run client:start",
+    "start": "node scripts/setup-db.js && concurrently \"npm run server\" \"npm run client:start\"",
     "dev": "npm run server:dev & npm run client:dev",
     "server": "npx tsx server/api/server.ts",
     "server:dev": "npx tsx --watch server/api/server.ts",
@@ -22,6 +21,7 @@
     "@types/node": "^24.3.1",
     "ai": "^5.0.34",
     "axios": "^1.11.0",
+    "concurrently": "^9.1.0",
     "dotenv": "^17.2.2",
     "drizzle-orm": "^0.44.5",
     "exceljs": "^4.4.0",

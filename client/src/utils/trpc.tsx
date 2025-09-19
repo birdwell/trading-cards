@@ -40,15 +40,15 @@ function getQueryClient() {
 }
 
 function getUrl() {
-  // In production, use environment variable or Railway backend URL
+  // In production, use environment variable or same domain (Railway monolith deployment)
   // In development, use localhost
   if (typeof window !== "undefined") {
     // Browser environment
     if (window.location.hostname === "localhost") {
       return "http://localhost:3002";
     } else {
-      // Production - use environment variable for backend URL
-      return process.env.NEXT_PUBLIC_API_URL || `${window.location.protocol}//${window.location.hostname}:3002`;
+      // Production - Railway deploys both on same domain/port, so use relative path
+      return process.env.NEXT_PUBLIC_API_URL || `${window.location.protocol}//${window.location.hostname}`;
     }
   }
   // Server-side rendering - use environment variable or default

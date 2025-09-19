@@ -18,12 +18,13 @@ const server = createHTTPServer({
   router: appRouter,
   createContext: () => ({}), // Empty context for now
   middleware: (req, res, next) => {
-    // Log incoming requests
+    // Log incoming requests with more detail
     logger.info({
       method: req.method,
       url: req.url,
       userAgent: req.headers['user-agent'],
-      ip: req.headers['x-forwarded-for'] || req.connection?.remoteAddress
+      ip: req.headers['x-forwarded-for'] || req.connection?.remoteAddress,
+      contentType: req.headers['content-type']
     }, `${req.method} ${req.url}`);
 
     // Enable CORS for all origins (you can restrict this to specific origins in production)

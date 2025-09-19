@@ -2,17 +2,17 @@
 
 ## Railway Deployment (Recommended)
 
-Railway is perfect for this full-stack application. We'll deploy the backend and frontend as separate services.
+Railway is perfect for this full-stack application and CAN deploy both frontend and backend together in a single service.
 
 ### Prerequisites
 1. GitHub account with your code pushed to a repository
 2. Railway account (sign up at [railway.app](https://railway.app))
 
-### Step 1: Deploy Backend (tRPC Server)
+### Step 1: Deploy Full-Stack Application
 1. Go to [railway.app](https://railway.app) and sign in
 2. Click "New Project" → "Deploy from GitHub repo"
 3. Select your trading-cards repository
-4. Railway will automatically detect it's a Node.js project
+4. Railway will automatically detect it's a Node.js project and build both client and server
 5. Set these environment variables in Railway:
    ```
    NODE_ENV=production
@@ -20,16 +20,19 @@ Railway is perfect for this full-stack application. We'll deploy the backend and
    ```
 6. **Important**: Railway will automatically assign a PORT - don't set it manually
 7. Enable persistent storage for your SQLite database file
-8. Your backend will be available at: `https://your-app-name.up.railway.app`
+8. Your full application will be available at: `https://your-app-name.up.railway.app`
 
-### Step 2: Deploy Frontend (Next.js Client)
-1. In the same Railway project, add a new service
-2. Point it to the `/client` directory of your repository
-3. Set these environment variables:
-   ```
-   NEXT_PUBLIC_API_URL=https://your-backend-url.up.railway.app
-   ```
-4. Railway will automatically build and deploy your Next.js app
+### Step 2: How It Works
+- Railway runs `npm run build` which builds both the Next.js client and TypeScript server
+- Railway runs `npm start` which starts both the tRPC server (port 3002) and Next.js client (port 3000) using `concurrently`
+- The Next.js client automatically detects it's in production and connects to the tRPC server on the same domain
+- Both services run simultaneously in the same Railway container
+
+### Step 3: Test the Application
+1. Visit your Railway URL
+2. You should see your Next.js frontend
+3. The app should automatically connect to the tRPC backend running on the same domain
+4. Check the Network tab in browser dev tools to see API calls
 
 ### Step 3: Database Setup
 Your existing SQLite database will work perfectly:
