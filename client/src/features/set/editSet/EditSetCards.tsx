@@ -82,9 +82,9 @@ export default function EditSetCards({ cards, setId }: EditSetCardsProps) {
     onSuccess: () => {
       setIsDeleting(false);
       setCardToDelete(null);
-      // Invalidate queries to refresh data
-      queryClient.invalidateQueries({ queryKey: ['getSetWithCards', { setId }] });
-      queryClient.invalidateQueries({ queryKey: ['getSetsWithStats'] });
+      // Invalidate queries to refresh data using proper tRPC query options
+      queryClient.invalidateQueries(trpc.getSetWithCards.queryOptions({ setId }));
+      queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
     },
     onError: (error: any) => {
       setIsDeleting(false);

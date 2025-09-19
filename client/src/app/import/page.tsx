@@ -35,9 +35,9 @@ export default function ImportPage() {
           count: data.count,
         });
         setUrl("");
-        // Invalidate sets query to refresh the main page
-        queryClient.invalidateQueries({ queryKey: ["getSets"] });
-        queryClient.invalidateQueries({ queryKey: ["getSetsWithStats"] });
+        // Invalidate sets query to refresh the main page using proper tRPC query options
+        queryClient.invalidateQueries(trpc.getSets.queryOptions());
+        queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
       },
       onError: (error: any) => {
         setIsImporting(false);

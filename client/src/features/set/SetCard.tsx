@@ -6,25 +6,35 @@ import { Card } from "@/types";
 
 interface SetCardProps {
   card: Card;
+  onOwnershipChange?: () => void;
 }
 
-export default function SetCard({ card }: SetCardProps) {
+export default function SetCard({ card, onOwnershipChange }: SetCardProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const updateOwnershipMutation = useMutation(trpc.updateCardOwnership.mutationOptions({
-    onMutate: () => setIsUpdating(true),
-    onSettled: () => {
-      setIsUpdating(false);
-      queryClient.invalidateQueries({ 
-        queryKey: ['getSetWithCards', { setId: card.setId }] 
-      });
-    },
-    onError: (err: any) => {
-      console.error("Failed to update card ownership:", err);
-    },
-  }));
+  const updateOwnershipMutation = useMutation(
+    trpc.updateCardOwnership.mutationOptions({
+      onMutate: () => setIsUpdating(true),
+      onSuccess: () => {
+        // Invalidate the specific query using the exact same query key structure
+        queryClient.invalidateQueries(
+          trpc.getSetWithCards.queryOptions({ setId: card.setId })
+        );
+        // Also invalidate the sets with stats query to update the main page
+        queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
+        // Call the optional callback
+        onOwnershipChange?.();
+      },
+      onSettled: () => {
+        setIsUpdating(false);
+      },
+      onError: (err: any) => {
+        console.error("Failed to update card ownership:", err);
+      },
+    })
+  );
 
   const handleToggleOwnership = () => {
     updateOwnershipMutation.mutate({

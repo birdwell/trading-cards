@@ -35,9 +35,10 @@ export default function EditSetContent({ set, cards }: EditSetContentProps) {
         success: true,
         message: "Set updated successfully!",
       });
-      // Invalidate queries to refresh data
-      queryClient.invalidateQueries({ queryKey: ['getSetWithCards', { setId: set.id }] });
-      queryClient.invalidateQueries({ queryKey: ['getSets'] });
+      // Invalidate queries to refresh data using proper tRPC query options
+      queryClient.invalidateQueries(trpc.getSetWithCards.queryOptions({ setId: set.id }));
+      queryClient.invalidateQueries(trpc.getSets.queryOptions());
+      queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
     },
     onError: (error: any) => {
       setIsUpdating(false);
