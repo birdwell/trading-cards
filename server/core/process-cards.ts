@@ -2,13 +2,15 @@ import "dotenv/config";
 import ExcelJS from "exceljs";
 import { generateObject } from "ai";
 import { z } from "zod";
-import { google } from "@ai-sdk/google";
 import logger from "../shared/logger";
 import { Sport } from "../shared/types";
 import { Card } from "../db/types";
 import { createCards } from "./create-cards";
-
-const googleApiModel = google("models/gemini-1.5-flash-latest");
+import {
+  createGeminiModel,
+  GEMINI_MODEL_UNAVAILABLE_MESSAGE,
+  isGeminiModelUnavailableError,
+} from "./gemini-model";
 
 const cardSchema = z.object({
   cardNumber: z.number().int(),
@@ -44,10 +46,16 @@ export default async function processCards(
   `;
 
   const { object: cards } = await generateObject({
-    model: googleApiModel,
+    model: createGeminiModel(),
     system: systemPrompt,
     prompt: csvData,
     schema: cardsSchema,
+  }).catch((error) => {
+    if (isGeminiModelUnavailableError(error)) {
+      throw new Error(GEMINI_MODEL_UNAVAILABLE_MESSAGE);
+    }
+
+    throw error;
   });
 
   if (cards.length > 0) {
