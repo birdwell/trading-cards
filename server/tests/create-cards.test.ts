@@ -7,7 +7,15 @@ import { tradingCards } from "../db/service";
 import { Sport } from "../shared/types";
 
 // Mock only the logger to avoid console noise during tests
-jest.mock("../shared/logger");
+jest.mock("../shared/logger", () => ({
+  __esModule: true,
+  default: {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    fatal: jest.fn(),
+  },
+}));
 
 describe("createCards Integration Tests", () => {
   let testSetIds: number[] = [];
