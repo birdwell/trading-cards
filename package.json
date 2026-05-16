@@ -1,15 +1,19 @@
 {
+  "name": "trading-cards",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.25.0",
   "scripts": {
-    "start": "node scripts/setup-db.js && concurrently \"BACKEND_PORT=3002 npm run server\" \"PORT=${PORT:-3000} npm run client:start\"",
-    "dev": "npm run server:dev & npm run client:dev",
-    "server": "npx tsx server/api/server.ts",
-    "server:dev": "npx tsx --watch server/api/server.ts",
-    "client:dev": "cd client && npm run dev",
-    "client:build": "cd client && npm run build",
-    "client:start": "cd client && npm run start",
-    "build": "npm run client:build && npx tsc",
+    "start": "node scripts/setup-db.js && concurrently \"BACKEND_PORT=3002 pnpm run server\" \"PORT=${PORT:-3000} pnpm run client:start\"",
+    "dev": "concurrently \"pnpm run server:dev\" \"pnpm run client:dev\"",
+    "server": "tsx server/api/server.ts",
+    "server:dev": "tsx --watch server/api/server.ts",
+    "client:dev": "pnpm --filter client dev",
+    "client:build": "pnpm --filter client build",
+    "client:start": "pnpm --filter client start",
+    "build": "concurrently --kill-others-on-fail -n client,server -c auto \"pnpm run client:build\" \"pnpm run typecheck\"",
+    "typecheck": "tsc --noEmit",
     "test": "jest",
-    "postinstall": "cd client && npm install",
     "db:setup": "node scripts/setup-db.js"
   },
   "dependencies": {
@@ -29,15 +33,14 @@
     "pino-pretty": "^13.1.1",
     "playwright": "^1.55.0",
     "ts-node": "^10.9.2",
-    "tsx": "^4.20.5",
+    "tsx": "4.21.0",
     "typescript": "^5.9.2",
     "zod": "^4.1.5"
   },
-  "type": "module",
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "drizzle-kit": "^0.31.4",
-    "jest": "^30.1.3",
-    "ts-jest": "^29.4.1"
+    "drizzle-kit": "0.31.8",
+    "jest": "30.2.0",
+    "ts-jest": "29.4.6"
   }
 }

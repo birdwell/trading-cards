@@ -16,7 +16,7 @@ if (!existsSync(dbDir) && dbDir !== '.') {
 // Run database migrations
 console.log('Running database migrations...');
 try {
-  execSync('npx drizzle-kit push', { stdio: 'inherit' });
+  execSync('pnpm exec drizzle-kit push', { stdio: 'inherit' });
   console.log('Database migrations completed successfully!');
 } catch (error) {
   console.error('Database migration failed:', error.message);
