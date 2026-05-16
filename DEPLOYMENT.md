@@ -27,6 +27,7 @@ Railway is perfect for this full-stack application and CAN deploy both frontend 
 
 ### Step 2: How It Works
 - Railway runs `npm run build` which builds both the Next.js client and TypeScript server
+- Railway installs Chromium with `npx playwright install --with-deps chromium` so production imports can scrape checklist pages
 - Railway runs `npm start` which starts both the tRPC server (BACKEND_PORT) and Next.js client (FRONTEND_PORT) using `concurrently`
 - The Next.js client automatically detects it's in production and connects to the tRPC server on the same domain
 - Both services run simultaneously in the same Railway container
