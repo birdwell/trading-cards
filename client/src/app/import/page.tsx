@@ -17,7 +17,6 @@ export default function ImportPage() {
   const [importResult, setImportResult] = useState<{
     success: boolean;
     message: string;
-    count?: number;
   } | null>(null);
 
   const router = useRouter();
@@ -35,7 +34,6 @@ export default function ImportPage() {
         setImportResult({
           success: true,
           message: data.message,
-          count: data.count,
         });
         setUrl("");
         // Invalidate sets query to refresh the main page using proper tRPC query options
@@ -184,11 +182,6 @@ export default function ImportPage() {
                         }`}
                       >
                         {importResult.message}
-                        {importResult.success && importResult.count && (
-                          <span className="block mt-1 font-medium">
-                            {importResult.count} cards imported successfully
-                          </span>
-                        )}
                       </p>
                       {importResult.success && (
                         <button
