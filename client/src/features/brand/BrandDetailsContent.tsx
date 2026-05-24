@@ -43,15 +43,6 @@ interface BrandDetailsProps {
 export default function BrandDetailsContent({ brandData }: BrandDetailsProps) {
   const router = useRouter();
 
-  const handleBackToBrands = () => {
-    router.push("/brands");
-  };
-
-  const handleSetClick = (setId: number) => {
-    router.push(`/set/${setId}`);
-  };
-
-  // Transform data to organize by sport first, then by year
   const transformDataBySport = (sport: "basketball" | "football") => {
     return brandData.yearGroups
       .map((yearGroup) => ({
@@ -59,32 +50,51 @@ export default function BrandDetailsContent({ brandData }: BrandDetailsProps) {
         sets: yearGroup[sport] || [],
       }))
       .filter((yearGroup) => yearGroup.sets.length > 0)
-      .sort((a, b) => b.year.localeCompare(a.year)); // Sort years descending (newest first)
+      .sort((a, b) => b.year.localeCompare(a.year));
   };
 
   const basketballData = transformDataBySport("basketball");
   const footballData = transformDataBySport("football");
+  const basketballCount = basketballData.reduce(
+    (n, g) => n + g.sets.length,
+    0
+  );
+  const footballCount = footballData.reduce((n, g) => n + g.sets.length, 0);
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="mx-auto max-w-7xl">
       <BrandHeader
         brand={brandData.brand}
         overallStats={brandData.overallStats}
-        onBackToBrands={handleBackToBrands}
+        onBackToBrands={() => router.push("/brands")}
       />
 
-      <BrandTabs>
-        <BrandSportTab
-          sport="basketball"
-          yearGroups={basketballData}
-          onSetClick={handleSetClick}
-        />
-        <BrandSportTab
-          sport="football"
-          yearGroups={footballData}
-          onSetClick={handleSetClick}
-        />
-      </BrandTabs>
+      <section className="py-10 md:py-14">
+        <div className="mb-6 flex items-baseline gap-4">
+          <span className="font-mono-tight text-[10px] tracking-[0.28em] text-muted-foreground">
+            §
+          </span>
+          <h2 className="font-display text-2xl font-light tracking-tight">
+            Sets
+          </h2>
+        </div>
+
+        <BrandTabs
+          basketballCount={basketballCount}
+          footballCount={footballCount}
+        >
+          <BrandSportTab
+            sport="basketball"
+            yearGroups={basketballData}
+            onSetClick={(setId) => router.push(`/set/${setId}`)}
+          />
+          <BrandSportTab
+            sport="football"
+            yearGroups={footballData}
+            onSetClick={(setId) => router.push(`/set/${setId}`)}
+          />
+        </BrandTabs>
+      </section>
     </div>
   );
 }

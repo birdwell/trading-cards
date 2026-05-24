@@ -15,24 +15,34 @@ export default function BrandsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 py-8">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <main>
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">
-              Brand Overview
-            </h1>
-            <p className="text-muted-foreground">
-              View your collection progress across different trading card brands
-            </p>
-          </div>
+          <section className="border-b border-border/60 pb-10 pt-12 md:pt-20">
+            <div className="rise">
+              <div className="eyebrow mb-6 flex items-center gap-3">
+                <span className="h-px w-8 bg-foreground/40" />
+                <span>Publishers — Volume I</span>
+              </div>
+              <h1 className="font-display text-5xl md:text-6xl font-light leading-[0.95] tracking-tight">
+                By{" "}
+                <span className="italic text-accent">brand</span>.
+              </h1>
+              <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                Collection progress grouped by manufacturer across every set
+                you&apos;ve imported.
+              </p>
+            </div>
+          </section>
 
-          <DataStateWrapper
-            isLoading={isLoading}
-            error={error?.message}
-            data={data}
-          >
-            {data && <BrandOverviewGrid brands={data} />}
-          </DataStateWrapper>
+          <section className="py-10 md:py-14">
+            <DataStateWrapper
+              isLoading={isLoading}
+              error={error?.message}
+              data={data}
+            >
+              {data && <BrandOverviewGrid brands={data} />}
+            </DataStateWrapper>
+          </section>
         </main>
       </div>
     </div>

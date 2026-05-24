@@ -1,7 +1,6 @@
 import { useRouter } from "next/navigation";
-import { CheckCircle, XCircle, ArrowRight } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { ArrowUpRight, Check, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface UpdateResultProps {
   result: {
@@ -14,40 +13,54 @@ interface UpdateResultProps {
 export default function UpdateResult({ result, setId }: UpdateResultProps) {
   const router = useRouter();
 
-  const handleBackToSet = () => {
-    router.push(`/set/${setId}`);
-  };
-
   return (
-    <Card className={result.success ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950" : "border-destructive/50 bg-destructive/10"}>
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3">
-          {result.success ? (
-            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
-          ) : (
-            <XCircle className="w-5 h-5 text-destructive mt-0.5" />
+    <div
+      className={cn(
+        "border p-5",
+        result.success
+          ? "border-accent/40 bg-accent/5"
+          : "border-destructive/40 bg-destructive/5"
+      )}
+    >
+      <div className="flex items-start gap-3">
+        <span
+          className={cn(
+            "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border",
+            result.success
+              ? "border-accent bg-accent text-accent-foreground"
+              : "border-destructive bg-destructive text-destructive-foreground"
           )}
-          <div className="flex-1">
-            <h3 className={`font-medium text-sm ${result.success ? "text-green-800 dark:text-green-200" : "text-destructive"}`}>
-              {result.success ? "Update Successful!" : "Update Failed"}
-            </h3>
-            <p className={`mt-1 text-sm ${result.success ? "text-green-700 dark:text-green-300" : "text-destructive/80"}`}>
-              {result.message}
-            </p>
-            {result.success && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleBackToSet}
-                className="mt-3 p-0 h-auto text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 font-medium"
-              >
-                Back to set
-                <ArrowRight className="w-3 h-3 ml-1" />
-              </Button>
+        >
+          {result.success ? (
+            <Check className="h-3 w-3" />
+          ) : (
+            <X className="h-3 w-3" />
+          )}
+        </span>
+        <div>
+          <p
+            className={cn(
+              "font-mono-tight text-[10px] uppercase tracking-[0.22em]",
+              result.success ? "text-accent" : "text-destructive"
             )}
-          </div>
+          >
+            {result.success ? "Saved" : "Failed"}
+          </p>
+          <p className="mt-2 font-display text-lg font-light leading-snug">
+            {result.message}
+          </p>
+          {result.success && (
+            <button
+              type="button"
+              onClick={() => router.push(`/set/${setId}`)}
+              className="group mt-4 inline-flex items-center gap-2 text-sm"
+            >
+              <span className="font-medium tracking-tight">View set</span>
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </button>
+          )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

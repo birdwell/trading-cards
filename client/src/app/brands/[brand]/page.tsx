@@ -21,10 +21,10 @@ export default function BrandDetailsPage() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-12">
-            <p className="text-destructive text-lg">Invalid brand name</p>
-          </div>
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 text-center">
+          <p className="font-display text-2xl font-light text-destructive">
+            Invalid brand name
+          </p>
         </div>
       </div>
     );
@@ -33,16 +33,14 @@ export default function BrandDetailsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 py-8">
-        <main>
-          <DataStateWrapper
-            isLoading={isLoading}
-            error={error?.message}
-            data={data}
-          >
-            {data && <BrandDetailsContent brandData={data} />}
-          </DataStateWrapper>
-        </main>
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-10 md:py-14">
+        <DataStateWrapper
+          isLoading={isLoading}
+          error={error?.message}
+          data={data}
+        >
+          {data && <BrandDetailsContent brandData={data} />}
+        </DataStateWrapper>
       </div>
     </div>
   );

@@ -1,7 +1,5 @@
-import { ArrowLeft, Package, TrendingUp, Target } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import BrandProgressBar from "./BrandProgressBar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface BrandHeaderProps {
   brand: string;
@@ -14,86 +12,65 @@ interface BrandHeaderProps {
   onBackToBrands: () => void;
 }
 
-export default function BrandHeader({ brand, overallStats, onBackToBrands }: BrandHeaderProps) {
+export default function BrandHeader({
+  brand,
+  overallStats,
+  onBackToBrands,
+}: BrandHeaderProps) {
   return (
-    <div className="mb-6">
-      <Button
-        variant="ghost"
+    <section className="rise border-b border-border/60 pb-10">
+      <button
+        type="button"
         onClick={onBackToBrands}
-        className="gap-2 mb-4 px-0 text-muted-foreground hover:text-foreground"
+        className="group mb-10 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Brands
-      </Button>
+        <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+        <span className="font-mono-tight uppercase tracking-[0.22em] text-[10px]">
+          Back to brands
+        </span>
+      </button>
 
-      <Card>
-        <CardContent className="p-4">
-          {/* Header Section with Brand Name and Overall Progress */}
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold mb-1">
-                {brand}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Complete collection overview across all years and sports
-              </p>
-            </div>
-            <div className="text-center lg:text-right">
-              <div className="text-2xl font-bold text-primary">
-                {overallStats.completionPercentage}%
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Overall Progress
-              </div>
-            </div>
+      <div className="grid gap-10 md:grid-cols-12 md:items-end">
+        <div className="md:col-span-8">
+          <div className="eyebrow mb-6 flex items-center gap-3">
+            <span className="h-px w-8 bg-foreground/40" />
+            <span>Publisher</span>
           </div>
+          <h1 className="font-display text-5xl md:text-6xl font-light leading-[0.95] tracking-tight">
+            {brand}
+          </h1>
+          <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
+            Every set from this brand across basketball and football.
+          </p>
+        </div>
 
-          {/* Stats Grid and Progress Bar Section */}
-          <div className="flex flex-col xl:flex-row xl:items-center gap-4">
-            {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-3 flex-1">
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  <Package className="w-3 h-3 text-primary" />
-                  <span className="text-lg font-semibold">
-                    {overallStats.totalSets}
-                  </span>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Total Sets
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  <Target className="w-3 h-3 text-green-500" />
-                  <span className="text-lg font-semibold">
-                    {overallStats.totalOwnedCards}
-                  </span>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Cards Owned
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  <TrendingUp className="w-3 h-3 text-purple-500" />
-                  <span className="text-lg font-semibold">
-                    {overallStats.totalCards}
-                  </span>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Total Cards
-                </div>
-              </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="xl:w-64">
-              <BrandProgressBar percentage={overallStats.completionPercentage} className="h-3" />
-            </div>
+        <div className="md:col-span-4 md:border-l md:border-border/60 md:pl-8">
+          <div className="eyebrow mb-3">Completion</div>
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-5xl font-light tracking-tight tabular-nums">
+              {overallStats.completionPercentage}
+            </span>
+            <span className="font-mono-tight text-sm text-muted-foreground">
+              %
+            </span>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+          <div className="mt-4 flex items-baseline justify-between font-mono-tight text-xs tabular-nums text-foreground/80">
+            <span>
+              {overallStats.totalOwnedCards}
+              <span className="text-muted-foreground">
+                {" "}
+                / {overallStats.totalCards}
+              </span>
+            </span>
+            <span className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+              {overallStats.totalSets} sets
+            </span>
+          </div>
+          <div className="mt-3">
+            <BrandProgressBar percentage={overallStats.completionPercentage} />
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

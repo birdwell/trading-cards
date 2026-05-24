@@ -1,42 +1,94 @@
-import React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+"use client";
+
+import React, { useEffect, useState } from "react";
 
 interface BrandTabsProps {
   children: React.ReactNode;
-  defaultTab?: "basketball" | "football";
+  basketballCount?: number;
+  footballCount?: number;
 }
 
-export default function BrandTabs({ children, defaultTab = "basketball" }: BrandTabsProps) {
+function getDefaultTab(
+  basketballCount: number,
+  footballCount: number
+): "basketball" | "football" {
+  return basketballCount > 0
+    ? "basketball"
+    : footballCount > 0
+      ? "football"
+      : "basketball";
+}
+
+export default function BrandTabs({
+  children,
+  basketballCount = 0,
+  footballCount = 0,
+}: BrandTabsProps) {
+  const [activeTab, setActiveTab] = useState<"basketball" | "football">(() =>
+    getDefaultTab(basketballCount, footballCount)
+  );
+
+  useEffect(() => {
+    setActiveTab((current) => {
+      const currentCount =
+        current === "basketball" ? basketballCount : footballCount;
+      if (currentCount > 0) return current;
+      return getDefaultTab(basketballCount, footballCount);
+    });
+  }, [basketballCount, footballCount]);
+
+  const tabs: Array<{
+    id: "basketball" | "football";
+    label: string;
+    count: number;
+  }> = [
+    { id: "basketball", label: "Basketball", count: basketballCount },
+    { id: "football", label: "Football", count: footballCount },
+  ];
+
   return (
-    <Tabs defaultValue={defaultTab} className="w-full">
-      <TabsList>
-        <TabsTrigger value="basketball" className="gap-2">
-          <span>🏀</span>
-          Basketball
-        </TabsTrigger>
-        <TabsTrigger value="football" className="gap-2">
-          <span>🏈</span>
-          Football
-        </TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="basketball" className="mt-6">
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child) && (child.props as any).sport === "basketball") {
-            return child;
-          }
-          return null;
+    <div>
+      <div className="mb-8 flex border-b border-border/60">
+        {tabs.map(({ id, label, count }) => {
+          const active = activeTab === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setActiveTab(id)}
+              className={`relative pb-3 pr-8 transition-colors ${
+                active
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <span className="flex items-baseline gap-3">
+                <span className="font-display text-lg tracking-tight">
+                  {label}
+                </span>
+                <span className="font-mono-tight text-[10px] tabular-nums text-muted-foreground">
+                  {String(count).padStart(2, "0")}
+                </span>
+              </span>
+              <span
+                className={`absolute inset-x-0 -bottom-px h-px origin-left bg-foreground transition-transform duration-300 ${
+                  active ? "scale-x-100" : "scale-x-0"
+                }`}
+              />
+            </button>
+          );
         })}
-      </TabsContent>
+      </div>
 
-      <TabsContent value="football" className="mt-6">
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child) && (child.props as any).sport === "football") {
-            return child;
-          }
-          return null;
-        })}
-      </TabsContent>
-    </Tabs>
+      {React.Children.map(children, (child) => {
+        if (
+          React.isValidElement(child) &&
+          (child.props as { sport?: string }).sport === activeTab
+        ) {
+          return child;
+        }
+        return null;
+      })}
+    </div>
   );
 }

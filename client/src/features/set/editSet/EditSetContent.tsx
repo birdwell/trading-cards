@@ -24,32 +24,31 @@ export default function EditSetContent({ set, cards }: EditSetContentProps) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const updateSetMutation = useMutation(trpc.updateSet.mutationOptions({
-    onMutate: () => {
-      setIsUpdating(true);
-      setUpdateResult(null);
-    },
-    onSuccess: () => {
-      setIsUpdating(false);
-      setUpdateResult({
-        success: true,
-        message: "Set updated successfully!",
-      });
-      // Invalidate queries to refresh data using proper tRPC query options
-      queryClient.invalidateQueries(trpc.getSetWithCards.queryOptions({ setId: set.id }));
-      queryClient.invalidateQueries(trpc.getSets.queryOptions());
-      queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
-    },
-    onError: (error: any) => {
-      setIsUpdating(false);
-      setUpdateResult({
-        success: false,
-        message: error.message,
-      });
-    },
-  }));
+  const updateSetMutation = useMutation(
+    trpc.updateSet.mutationOptions({
+      onMutate: () => {
+        setIsUpdating(true);
+        setUpdateResult(null);
+      },
+      onSuccess: () => {
+        setIsUpdating(false);
+        setUpdateResult({
+          success: true,
+          message: "Set updated successfully.",
+        });
+        queryClient.invalidateQueries(
+          trpc.getSetWithCards.queryOptions({ setId: set.id })
+        );
+        queryClient.invalidateQueries(trpc.getSets.queryOptions());
+        queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
+      },
+      onError: (error) => {
+        setIsUpdating(false);
+        setUpdateResult({ success: false, message: error.message });
+      },
+    })
+  );
 
-  // Initialize form with current data
   useEffect(() => {
     setName(set.name);
     setSport(set.sport);
@@ -67,35 +66,42 @@ export default function EditSetContent({ set, cards }: EditSetContentProps) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* Edit Set Form - Top Row */}
-      <div className="mb-6">
-        <EditSetHeader setId={set.id} setName={set.name} />
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <EditSetForm
-              name={name}
-              sport={sport}
-              isUpdating={isUpdating}
-              onNameChange={setName}
-              onSportChange={setSport}
-              onSubmit={handleSubmit}
-            />
-          </div>
-          
-          {updateResult && (
-            <div className="lg:col-span-1">
-              <UpdateResult result={updateResult} setId={set.id} />
-            </div>
-          )}
-        </div>
-      </div>
+    <div className="mx-auto max-w-7xl">
+      <EditSetHeader setId={set.id} setName={set.name} />
 
-      {/* Cards List - Bottom Row */}
-      <div>
+      <section className="grid gap-10 py-10 md:grid-cols-12 md:py-14">
+        <div className="md:col-span-7">
+          <EditSetForm
+            name={name}
+            sport={sport}
+            isUpdating={isUpdating}
+            onNameChange={setName}
+            onSportChange={setSport}
+            onSubmit={handleSubmit}
+          />
+        </div>
+
+        {updateResult && (
+          <div className="md:col-span-5 md:pl-8 md:border-l md:border-border/60">
+            <UpdateResult result={updateResult} setId={set.id} />
+          </div>
+        )}
+      </section>
+
+      <section className="border-t border-border/60 py-10 md:py-14">
+        <div className="mb-6 flex items-baseline gap-4">
+          <span className="font-mono-tight text-[10px] tracking-[0.28em] text-muted-foreground">
+            §
+          </span>
+          <h2 className="font-display text-2xl font-light tracking-tight">
+            Cards
+          </h2>
+          <span className="font-mono-tight text-xs tabular-nums text-muted-foreground">
+            ({cards.length})
+          </span>
+        </div>
         <EditSetCards cards={cards} setId={set.id} />
-      </div>
+      </section>
     </div>
   );
 }
