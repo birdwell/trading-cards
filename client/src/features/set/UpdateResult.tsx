@@ -51,6 +51,7 @@ export default function UpdateResult({ result, setId }: UpdateResultProps) {
           </p>
           {result.success && (
             <button
+              type="button"
               onClick={() => router.push(`/set/${setId}`)}
               className="group mt-4 inline-flex items-center gap-2 text-sm"
             >

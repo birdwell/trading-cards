@@ -1,11 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface BrandTabsProps {
   children: React.ReactNode;
   basketballCount?: number;
   footballCount?: number;
+}
+
+function getDefaultTab(
+  basketballCount: number,
+  footballCount: number
+): "basketball" | "football" {
+  return basketballCount > 0
+    ? "basketball"
+    : footballCount > 0
+      ? "football"
+      : "basketball";
 }
 
 export default function BrandTabs({
@@ -14,12 +25,17 @@ export default function BrandTabs({
   footballCount = 0,
 }: BrandTabsProps) {
   const [activeTab, setActiveTab] = useState<"basketball" | "football">(() =>
-    basketballCount > 0
-      ? "basketball"
-      : footballCount > 0
-        ? "football"
-        : "basketball"
+    getDefaultTab(basketballCount, footballCount)
   );
+
+  useEffect(() => {
+    setActiveTab((current) => {
+      const currentCount =
+        current === "basketball" ? basketballCount : footballCount;
+      if (currentCount > 0) return current;
+      return getDefaultTab(basketballCount, footballCount);
+    });
+  }, [basketballCount, footballCount]);
 
   const tabs: Array<{
     id: "basketball" | "football";
