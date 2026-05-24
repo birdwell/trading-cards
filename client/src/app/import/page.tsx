@@ -14,7 +14,6 @@ export default function ImportPage() {
   const [importResult, setImportResult] = useState<{
     success: boolean;
     message: string;
-    count?: number;
   } | null>(null);
 
   const router = useRouter();
@@ -32,7 +31,6 @@ export default function ImportPage() {
         setImportResult({
           success: true,
           message: data.message,
-          count: data.count,
         });
         setUrl("");
         queryClient.invalidateQueries(trpc.getSets.queryOptions());
@@ -181,11 +179,6 @@ export default function ImportPage() {
                     <p className="mt-2 font-display text-xl font-light leading-snug">
                       {importResult.message}
                     </p>
-                    {importResult.success && importResult.count != null && (
-                      <p className="mt-2 font-mono-tight text-xs tabular-nums text-muted-foreground">
-                        {importResult.count} cards filed
-                      </p>
-                    )}
 
                     {importResult.success && (
                       <button
