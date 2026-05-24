@@ -2,6 +2,8 @@
 
 A TypeScript application that automatically imports and manages trading card data from beckett.com. The application scrapes trading card checklists from URLs, downloads Excel files, and stores the card information in a SQLite database.
 
+**Live app:** [https://sportscards.up.railway.app](https://sportscards.up.railway.app)
+
 ## Features
 
 - 🃏 **Automated Card Import**: Import trading card data directly from URLs
