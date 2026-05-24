@@ -22,7 +22,13 @@ export default function SetDetailsContent({
     <div className="mx-auto max-w-7xl">
       {/* Back link */}
       <button
-        onClick={() => router.back()}
+        onClick={() => {
+          if (window.history.length > 1) {
+            router.back();
+          } else {
+            router.push("/");
+          }
+        }}
         className="group mb-10 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />

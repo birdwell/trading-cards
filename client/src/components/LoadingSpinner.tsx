@@ -7,13 +7,6 @@ export default function LoadingSpinner() {
       <span className="font-mono-tight text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
         Gathering the catalog
       </span>
-
-      <style>{`
-        @keyframes loading {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(400%); }
-        }
-      `}</style>
     </div>
   );
 }

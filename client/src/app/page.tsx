@@ -155,7 +155,7 @@ function Stat({
         <span className="font-display text-3xl md:text-4xl font-light tracking-tight tabular-nums">
           {isLoading ? "—" : value.toLocaleString()}
         </span>
-        {suffix && (
+        {suffix && !isLoading && (
           <span className="font-mono-tight text-xs text-muted-foreground">
             {suffix}
           </span>
