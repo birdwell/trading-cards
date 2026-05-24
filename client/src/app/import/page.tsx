@@ -5,11 +5,8 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/utils/trpc";
 import Navigation from "@/components/Navigation";
-import { Upload, ExternalLink, CheckCircle, XCircle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { ArrowUpRight, Check, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function ImportPage() {
   const [url, setUrl] = useState("");
@@ -38,16 +35,12 @@ export default function ImportPage() {
           count: data.count,
         });
         setUrl("");
-        // Invalidate sets query to refresh the main page using proper tRPC query options
         queryClient.invalidateQueries(trpc.getSets.queryOptions());
         queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
       },
-      onError: (error: any) => {
+      onError: (error) => {
         setIsImporting(false);
-        setImportResult({
-          success: false,
-          message: error.message,
-        });
+        setImportResult({ success: false, message: error.message });
       },
     })
   );
@@ -55,155 +48,161 @@ export default function ImportPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
-
     importMutation.mutate({ url: url.trim() });
-  };
-
-  const handleBackToSets = () => {
-    router.push("/");
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 py-8">
-        <main>
-          <div className="max-w-2xl mx-auto">
-            <Card className="p-8">
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
-                  <Upload className="w-8 h-8 text-primary" />
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-10 md:py-14">
+        <main className="mx-auto max-w-3xl">
+          {/* Masthead */}
+          <section className="rise border-b border-border/60 pb-10">
+            <div className="eyebrow mb-6 flex items-center gap-3">
+              <span className="h-px w-8 bg-foreground/40" />
+              <span>New Entry — Volume I</span>
+            </div>
+            <h1 className="font-display text-5xl md:text-6xl font-light leading-[0.95] tracking-tight">
+              Import a{" "}
+              <span className="italic text-accent">set</span>.
+            </h1>
+            <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
+              Paste a Beckett URL and we&apos;ll pull the checklist into your
+              collection.
+            </p>
+          </section>
+
+          {/* Form */}
+          <section className="py-10 md:py-14">
+            <form onSubmit={handleSubmit} className="space-y-10">
+              <div>
+                <label
+                  htmlFor="url"
+                  className="eyebrow mb-3 block"
+                >
+                  Beckett URL
+                </label>
+                <div className="relative">
+                  <input
+                    id="url"
+                    type="url"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    placeholder="https://www.beckett.com/news/..."
+                    disabled={isImporting}
+                    required
+                    autoFocus
+                    className={cn(
+                      "w-full border-0 border-b border-border bg-transparent",
+                      "py-3 pr-10 text-lg font-display font-light tracking-tight",
+                      "placeholder:text-muted-foreground/50 placeholder:font-sans placeholder:text-base",
+                      "outline-none transition-colors",
+                      "focus:border-foreground",
+                      "disabled:opacity-50"
+                    )}
+                  />
+                  <ArrowUpRight className="absolute right-1 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 </div>
-                <h1 className="text-3xl font-bold mb-2">
-                  Import New Set
-                </h1>
-                <p className="text-muted-foreground">
-                  Enter a Beckett URL to import a new trading card set
+                <p className="mt-3 font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                  Pull checklists from Beckett articles
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <Label htmlFor="url">
-                    Beckett URL
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      type="url"
-                      id="url"
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                      placeholder="https://www.beckett.com/news/..."
-                      disabled={isImporting}
-                      required
-                      className="pr-10"
-                    />
-                    <ExternalLink className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  </div>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Import trading card checklists from Beckett articles
-                  </p>
-                </div>
+              <div className="flex items-center justify-between gap-4">
+                <button
+                  type="button"
+                  onClick={() => router.push("/")}
+                  className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  ← Cancel
+                </button>
 
-                <Button
+                <button
                   type="submit"
                   disabled={isImporting || !url.trim()}
-                  className="w-full gap-2"
+                  className={cn(
+                    "group inline-flex items-center gap-3 border border-foreground bg-foreground px-6 py-3 text-sm text-background transition-all",
+                    "hover:bg-transparent hover:text-foreground",
+                    "disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-foreground disabled:hover:text-background"
+                  )}
                 >
                   {isImporting ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
-                      Importing...
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
+                      <span className="font-medium tracking-tight">Importing…</span>
                     </>
                   ) : (
                     <>
-                      <Upload className="w-4 h-4" />
-                      Import Set
+                      <span className="font-medium tracking-tight">Import set</span>
+                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                     </>
                   )}
-                </Button>
-              </form>
+                </button>
+              </div>
+            </form>
+          </section>
 
-              {importResult && (
-                <div
-                  className={`mt-6 p-4 rounded-lg ${
-                    importResult.success
-                      ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
-                      : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
-                  }`}
-                >
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      {importResult.success ? (
-                        <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                          <svg
-                            className="w-4 h-4 text-green-600 dark:text-green-400"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </div>
-                      ) : (
-                        <div className="w-6 h-6 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-                          <svg
-                            className="w-4 h-4 text-red-600 dark:text-red-400"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </div>
+          {/* Result */}
+          {importResult && (
+            <section className="rise pb-10">
+              <div
+                className={cn(
+                  "border p-6",
+                  importResult.success
+                    ? "border-accent/40 bg-accent/5"
+                    : "border-destructive/40 bg-destructive/5"
+                )}
+              >
+                <div className="flex items-start gap-4">
+                  <span
+                    className={cn(
+                      "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border",
+                      importResult.success
+                        ? "border-accent bg-accent text-accent-foreground"
+                        : "border-destructive bg-destructive text-destructive-foreground"
+                    )}
+                  >
+                    {importResult.success ? (
+                      <Check className="h-3.5 w-3.5" />
+                    ) : (
+                      <X className="h-3.5 w-3.5" />
+                    )}
+                  </span>
+
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={cn(
+                        "font-mono-tight text-[10px] uppercase tracking-[0.22em]",
+                        importResult.success ? "text-accent" : "text-destructive"
                       )}
-                    </div>
-                    <div className="ml-3">
-                      <h3
-                        className={`text-sm font-medium ${
-                          importResult.success
-                            ? "text-green-800 dark:text-green-200"
-                            : "text-red-800 dark:text-red-200"
-                        }`}
-                      >
-                        {importResult.success
-                          ? "Import Successful!"
-                          : "Import Failed"}
-                      </h3>
-                      <p
-                        className={`mt-1 text-sm ${
-                          importResult.success
-                            ? "text-green-700 dark:text-green-300"
-                            : "text-red-700 dark:text-red-300"
-                        }`}
-                      >
-                        {importResult.message}
-                        {importResult.success && importResult.count && (
-                          <span className="block mt-1 font-medium">
-                            {importResult.count} cards imported successfully
-                          </span>
-                        )}
+                    >
+                      {importResult.success ? "Imported" : "Failed"}
+                    </p>
+                    <p className="mt-2 font-display text-xl font-light leading-snug">
+                      {importResult.message}
+                    </p>
+                    {importResult.success && importResult.count != null && (
+                      <p className="mt-2 font-mono-tight text-xs tabular-nums text-muted-foreground">
+                        {importResult.count} cards filed
                       </p>
-                      {importResult.success && (
-                        <button
-                          onClick={handleBackToSets}
-                          className="mt-3 text-sm text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 font-medium"
-                        >
-                          View your sets →
-                        </button>
-                      )}
-                    </div>
+                    )}
+
+                    {importResult.success && (
+                      <button
+                        onClick={() => router.push("/")}
+                        className="group mt-5 inline-flex items-center gap-2 text-sm text-foreground"
+                      >
+                        <span className="font-medium tracking-tight">
+                          View collection
+                        </span>
+                        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
-              )}
-            </Card>
-          </div>
+              </div>
+            </section>
+          )}
         </main>
       </div>
     </div>

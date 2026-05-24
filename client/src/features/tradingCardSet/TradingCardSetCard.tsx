@@ -1,107 +1,127 @@
 import { SetWithStats } from "../../types";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
+import { ArrowUpRight, Trash2 } from "lucide-react";
 import ConfirmDeleteDialog from "@/components/ConfirmDeleteDialog";
-import ProgressBar from "@/components/ProgressBar";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 interface TradingCardSetCardProps {
   setWithStats: SetWithStats;
   onDeleted?: () => void;
+  index?: number;
 }
 
 export default function TradingCardSetCard({
   setWithStats,
   onDeleted,
+  index,
 }: TradingCardSetCardProps) {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
-  const handleDeleteClick = () => {
-    setShowConfirmDelete(true);
-  };
-
-  const handleOnSuccess = () => {
-    setIsDeleting(false);
-    onDeleted?.();
-  };
-
-  const handleError = (errorMessage: string) => {
-    setIsDeleting(false);
-    alert(errorMessage);
-  };
+  const { set, stats } = setWithStats;
+  const percentage =
+    stats.totalCards > 0 ? (stats.ownedCards / stats.totalCards) * 100 : 0;
+  const sportIcon = set.sport.toLowerCase() === "basketball" ? "●" : "▲";
 
   const handleViewCards = () => {
-    router.push(`/set/${setWithStats.set.id}`);
+    router.push(`/set/${set.id}`);
   };
 
-  const { set, stats } = setWithStats;
-
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-200">
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
-        <h3 className="text-xl font-semibold">
-          {set.name}
-        </h3>
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary">
-            {set.year}
-          </Badge>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleDeleteClick}
-            disabled={isDeleting}
-            className="text-destructive hover:text-destructive/80 h-8 w-8 p-0"
-            title="Delete set"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-3">
-        <div className="space-y-2">
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-muted-foreground">Progress</span>
-            <span className="font-medium">
-              {stats.ownedCards}/{stats.totalCards}
+    <article className="group relative border border-border/70 bg-card/30 transition-all duration-300 hover:border-foreground/40 hover:bg-card">
+      {/* Top bar: index + sport */}
+      <div className="flex items-center justify-between border-b border-border/60 px-5 py-3">
+        <div className="flex items-center gap-3 font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+          {typeof index === "number" && (
+            <span className="tabular-nums">
+              No. {String(index + 1).padStart(2, "0")}
             </span>
-          </div>
-          <ProgressBar current={stats.ownedCards} total={stats.totalCards} />
-          <p className="text-xs text-muted-foreground text-center">
-            {stats.totalCards > 0
-              ? `${Math.round(
-                  (stats.ownedCards / stats.totalCards) * 100
-                )}% complete`
-              : "No cards"}
-          </p>
+          )}
+          <span className="h-3 w-px bg-border" />
+          <span className="flex items-center gap-1.5">
+            <span className="text-foreground/70">{sportIcon}</span>
+            {set.sport}
+          </span>
         </div>
-      </CardContent>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowConfirmDelete(true);
+          }}
+          disabled={isDeleting}
+          aria-label="Delete set"
+          className="-mr-1.5 rounded p-1.5 text-muted-foreground/60 opacity-0 transition-all hover:text-destructive group-hover:opacity-100"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      </div>
+
+      {/* Clickable body */}
+      <button
+        onClick={handleViewCards}
+        className="block w-full cursor-pointer text-left"
+      >
+        <div className="px-5 pb-5 pt-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <span className="font-mono-tight text-xs tabular-nums text-muted-foreground">
+                {set.year}
+              </span>
+              <h3 className="mt-1 font-display text-2xl font-light leading-tight tracking-tight">
+                {set.name}
+              </h3>
+            </div>
+            <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground/60 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
+          </div>
+
+          {/* Progress */}
+          <div className="mt-6">
+            <div className="mb-2 flex items-baseline justify-between">
+              <span className="eyebrow">Progress</span>
+              <span className="font-mono-tight text-xs tabular-nums text-foreground/80">
+                {stats.ownedCards}
+                <span className="text-muted-foreground"> / {stats.totalCards}</span>
+              </span>
+            </div>
+
+            <div className="relative h-px w-full bg-border">
+              <div
+                className="absolute left-0 top-0 h-px bg-foreground transition-all duration-500"
+                style={{ width: `${Math.max(percentage, 0)}%` }}
+              />
+            </div>
+
+            <div className="mt-2 flex items-baseline justify-between">
+              <span className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                {stats.totalCards > 0 ? `${Math.round(percentage)}% complete` : "—"}
+              </span>
+              {percentage === 100 && (
+                <span className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-accent">
+                  Complete
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </button>
 
       {showConfirmDelete && (
         <ConfirmDeleteDialog
           set={set}
           onCancel={() => setShowConfirmDelete(false)}
-          onSuccess={handleOnSuccess}
-          onError={handleError}
+          onSuccess={() => {
+            setIsDeleting(false);
+            onDeleted?.();
+          }}
+          onError={(msg) => {
+            setIsDeleting(false);
+            alert(msg);
+          }}
           isDeleting={isDeleting}
           setIsDeleting={setIsDeleting}
         />
       )}
-
-      <CardFooter className="pt-4">
-        <Button
-          onClick={handleViewCards}
-          className="w-full"
-        >
-          View Cards
-        </Button>
-      </CardFooter>
-    </Card>
+    </article>
   );
 }
