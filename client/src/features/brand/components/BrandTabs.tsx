@@ -13,8 +13,12 @@ export default function BrandTabs({
   basketballCount = 0,
   footballCount = 0,
 }: BrandTabsProps) {
-  const [activeTab, setActiveTab] = useState<"basketball" | "football">(
-    "basketball"
+  const [activeTab, setActiveTab] = useState<"basketball" | "football">(() =>
+    basketballCount > 0
+      ? "basketball"
+      : footballCount > 0
+        ? "football"
+        : "basketball"
   );
 
   const tabs: Array<{

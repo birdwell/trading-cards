@@ -20,6 +20,7 @@ export default function BrandHeader({
   return (
     <section className="rise border-b border-border/60 pb-10">
       <button
+        type="button"
         onClick={onBackToBrands}
         className="group mb-10 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
