@@ -3,9 +3,7 @@ import { Check } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/utils/trpc";
 import { Card } from "@/types";
-import { Card as UICard, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface SetCardProps {
   card: Card;
@@ -21,19 +19,14 @@ export default function SetCard({ card, onOwnershipChange }: SetCardProps) {
     trpc.updateCardOwnership.mutationOptions({
       onMutate: () => setIsUpdating(true),
       onSuccess: () => {
-        // Invalidate the specific query using the exact same query key structure
         queryClient.invalidateQueries(
           trpc.getSetWithCards.queryOptions({ setId: card.setId })
         );
-        // Also invalidate the sets with stats query to update the main page
         queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
-        // Call the optional callback
         onOwnershipChange?.();
       },
-      onSettled: () => {
-        setIsUpdating(false);
-      },
-      onError: (err: any) => {
+      onSettled: () => setIsUpdating(false),
+      onError: (err) => {
         console.error("Failed to update card ownership:", err);
       },
     })
@@ -47,54 +40,76 @@ export default function SetCard({ card, onOwnershipChange }: SetCardProps) {
   };
 
   return (
-    <UICard className="hover:shadow-md transition-shadow duration-200">
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline">
-              #{card.cardNumber}
-            </Badge>
-            {card.isOwned && (
-              <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                Owned
-              </Badge>
-            )}
+    <button
+      type="button"
+      onClick={handleToggleOwnership}
+      disabled={isUpdating}
+      title={card.isOwned ? "Mark as not owned" : "Mark as owned"}
+      className={cn(
+        "group relative block w-full cursor-pointer overflow-hidden border border-border/70 bg-card/30 p-5 text-left transition-all duration-300",
+        "hover:border-foreground/40 hover:bg-card",
+        isUpdating && "opacity-60",
+        card.isOwned && "bg-card"
+      )}
+    >
+      {/* Owned ribbon */}
+      {card.isOwned && (
+        <span
+          aria-hidden="true"
+          className="absolute left-0 top-0 h-full w-px bg-accent"
+        />
+      )}
+
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+            <span className="tabular-nums">
+              No. {String(card.cardNumber).padStart(3, "0")}
+            </span>
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleToggleOwnership}
-            disabled={isUpdating}
-            className={`p-1.5 h-auto rounded-full transition-all duration-200 ${
-              card.isOwned
-                ? "bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-700 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50"
-                : "bg-muted text-muted-foreground hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/30 dark:hover:text-green-400"
-            } ${
-              isUpdating
-                ? "opacity-50 cursor-not-allowed"
-                : "cursor-pointer hover:scale-105"
-            }`}
-            title={card.isOwned ? "Mark as not owned" : "Mark as owned"}
-          >
-            <Check
-              className={`w-4 h-4 transition-all duration-200 ${
-                card.isOwned ? "scale-100" : "scale-75 opacity-60"
-              }`}
-            />
-          </Button>
-        </div>
+          <h3 className="mt-2 font-display text-xl font-light leading-tight tracking-tight">
+            {card.playerName}
+          </h3>
 
-        <h3 className="text-lg font-semibold mb-2">
-          {card.playerName}
-        </h3>
-
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">
+          <p className="mt-2 truncate text-xs text-muted-foreground">
             {card.cardType}
           </p>
         </div>
-      </CardContent>
-    </UICard>
+
+        {/* Tick mark */}
+        <span
+          aria-hidden="true"
+          className={cn(
+            "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all duration-300",
+            card.isOwned
+              ? "border-accent bg-accent text-accent-foreground"
+              : "border-border text-transparent group-hover:border-foreground/40"
+          )}
+        >
+          <Check
+            className={cn(
+              "h-3.5 w-3.5 transition-transform duration-300",
+              card.isOwned ? "scale-100" : "scale-50 opacity-0"
+            )}
+          />
+        </span>
+      </div>
+
+      {/* Subtle status footer */}
+      <div className="mt-5 flex items-center justify-between">
+        <span
+          className={cn(
+            "font-mono-tight text-[10px] uppercase tracking-[0.22em]",
+            card.isOwned ? "text-accent" : "text-muted-foreground/70"
+          )}
+        >
+          {card.isOwned ? "In collection" : "Missing"}
+        </span>
+        <span className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
+          {card.isOwned ? "Remove" : "Add"}
+        </span>
+      </div>
+    </button>
   );
 }

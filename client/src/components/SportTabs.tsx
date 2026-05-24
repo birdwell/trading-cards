@@ -3,9 +3,6 @@
 import { useState, useMemo } from "react";
 import { SetWithStats } from "../types";
 import TradingCardSetGrid from "../features/tradingCardSet/TradingCardSetGrid";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 interface SportTabsProps {
   setsWithStats: SetWithStats[];
@@ -19,186 +16,129 @@ export default function SportTabs({
   onSetDeleted,
 }: SportTabsProps) {
   const [activeTab, setActiveTab] = useState<SportTab>("Basketball");
-  const [selectedBasketballYear, setSelectedBasketballYear] = useState<
-    string | null
-  >(null);
-  const [selectedFootballYear, setSelectedFootballYear] = useState<
-    string | null
-  >(null);
+  const [yearByTab, setYearByTab] = useState<Record<SportTab, string | null>>({
+    Basketball: null,
+    Football: null,
+  });
 
-  // Filter sets by sport
   const basketballSets = setsWithStats.filter(
-    (setWithStats) => setWithStats.set.sport.toLowerCase() === "basketball"
+    (s) => s.set.sport.toLowerCase() === "basketball"
   );
   const footballSets = setsWithStats.filter(
-    (setWithStats) => setWithStats.set.sport.toLowerCase() === "football"
+    (s) => s.set.sport.toLowerCase() === "football"
   );
 
-  // Generate available years for each sport
   const availableYears = useMemo(() => {
-    const basketballYears = [...new Set(basketballSets.map((s) => s.set.year))]
-      .sort()
-      .reverse();
-    const footballYears = [...new Set(footballSets.map((s) => s.set.year))]
-      .sort()
-      .reverse();
-
+    const dedupe = (arr: SetWithStats[]) =>
+      [...new Set(arr.map((s) => s.set.year))].sort().reverse();
     return {
-      basketball: basketballYears,
-      football: footballYears,
+      Basketball: dedupe(basketballSets),
+      Football: dedupe(footballSets),
     };
   }, [basketballSets, footballSets]);
 
-  // Filter sets by sport and year
-  const getFilteredSets = () => {
-    let sets = activeTab === "Basketball" ? basketballSets : footballSets;
-    const selectedYear =
-      activeTab === "Basketball"
-        ? selectedBasketballYear
-        : selectedFootballYear;
-
-    if (selectedYear) {
-      sets = sets.filter(
-        (setWithStats) => setWithStats.set.year === selectedYear
-      );
-    }
-
-    return sets;
-  };
-
-  const currentSets = getFilteredSets();
-
-  const handleTabChange = (value: string) => {
-    const tab = value as SportTab;
-    setActiveTab(tab);
-    // Reset year filter when switching tabs
-    if (tab === "Basketball") {
-      setSelectedBasketballYear(null);
-    } else {
-      setSelectedFootballYear(null);
-    }
-  };
+  const currentSetsAll =
+    activeTab === "Basketball" ? basketballSets : footballSets;
+  const selectedYear = yearByTab[activeTab];
+  const currentSets = selectedYear
+    ? currentSetsAll.filter((s) => s.set.year === selectedYear)
+    : currentSetsAll;
 
   const handleYearFilter = (year: string | null) => {
-    if (activeTab === "Basketball") {
-      setSelectedBasketballYear(year);
-    } else {
-      setSelectedFootballYear(year);
-    }
+    setYearByTab((prev) => ({ ...prev, [activeTab]: year }));
   };
 
+  const tabs: Array<{ id: SportTab; label: string; count: number }> = [
+    { id: "Basketball", label: "Basketball", count: basketballSets.length },
+    { id: "Football", label: "Football", count: footballSets.length },
+  ];
+
   return (
-    <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
-      <TabsList>
-        <TabsTrigger value="Basketball">
-          Basketball
-          <Badge variant="secondary" className="ml-2">
-            {activeTab === "Basketball" ? currentSets.length : basketballSets.length}
-          </Badge>
-        </TabsTrigger>
-        <TabsTrigger value="Football">
-          Football
-          <Badge variant="secondary" className="ml-2">
-            {activeTab === "Football" ? currentSets.length : footballSets.length}
-          </Badge>
-        </TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="Basketball" className="space-y-4">
-        {/* Year Filters for Basketball */}
-        {availableYears.basketball.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant={selectedBasketballYear === null ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleYearFilter(null)}
-            >
-              All Years
-            </Button>
-            {availableYears.basketball.map((year) => (
-              <Button
-                key={year}
-                variant={selectedBasketballYear === year ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleYearFilter(year)}
+    <div>
+      {/* Editorial tabs */}
+      <div className="mb-8 flex items-end justify-between border-b border-border/60">
+        <div className="flex">
+          {tabs.map(({ id, label, count }) => {
+            const active = activeTab === id;
+            return (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`relative px-1 pb-3 pr-8 transition-colors ${
+                  active
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                {year}
-              </Button>
-            ))}
+                <span className="flex items-baseline gap-3">
+                  <span className="font-display text-lg tracking-tight">
+                    {label}
+                  </span>
+                  <span className="font-mono-tight text-[10px] tabular-nums text-muted-foreground">
+                    {String(count).padStart(2, "0")}
+                  </span>
+                </span>
+                <span
+                  className={`absolute inset-x-0 -bottom-px h-px origin-left transform bg-foreground transition-transform duration-300 ${
+                    active ? "scale-x-100" : "scale-x-0"
+                  }`}
+                />
+              </button>
+            );
+          })}
+        </div>
+
+        {selectedYear && (
+          <span className="hidden md:inline mb-3 font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+            Filtered · {selectedYear}
+          </span>
+        )}
+      </div>
+
+      {/* Year filter chips */}
+      {availableYears[activeTab].length > 0 && (
+        <div className="mb-8 flex flex-wrap items-center gap-2">
+          <span className="eyebrow mr-2">Year</span>
+          <button
+            onClick={() => handleYearFilter(null)}
+            className="chip"
+            data-active={selectedYear === null}
+          >
+            All
+          </button>
+          {availableYears[activeTab].map((year) => (
+            <button
+              key={year}
+              onClick={() => handleYearFilter(year)}
+              className="chip tabular-nums"
+              data-active={selectedYear === year}
+            >
+              {year}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Grid */}
+      <div className="min-h-[200px]">
+        {currentSets.length > 0 ? (
+          <TradingCardSetGrid
+            setsWithStats={currentSets}
+            onSetDeleted={onSetDeleted}
+          />
+        ) : (
+          <div className="border border-dashed border-border/80 py-16 text-center">
+            <p className="font-display text-xl font-light text-foreground/80">
+              {selectedYear
+                ? `Nothing on file for ${selectedYear}.`
+                : `No ${activeTab.toLowerCase()} sets just yet.`}
+            </p>
+            <p className="mt-2 font-mono-tight text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+              Import a set to begin
+            </p>
           </div>
         )}
-
-        {/* Basketball Content */}
-        <div className="min-h-[200px]">
-          {currentSets.length > 0 ? (
-            <TradingCardSetGrid
-              setsWithStats={currentSets}
-              onSetDeleted={onSetDeleted}
-            />
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg">
-                {selectedBasketballYear
-                  ? `No basketball sets found for ${selectedBasketballYear}`
-                  : "No basketball sets found"}
-              </p>
-              <p className="text-muted-foreground/60 text-sm mt-2">
-                {selectedBasketballYear
-                  ? "Try selecting a different year or import more basketball sets"
-                  : "Import some basketball sets to get started"}
-              </p>
-            </div>
-          )}
-        </div>
-      </TabsContent>
-
-      <TabsContent value="Football" className="space-y-4">
-        {/* Year Filters for Football */}
-        {availableYears.football.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant={selectedFootballYear === null ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleYearFilter(null)}
-            >
-              All Years
-            </Button>
-            {availableYears.football.map((year) => (
-              <Button
-                key={year}
-                variant={selectedFootballYear === year ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleYearFilter(year)}
-              >
-                {year}
-              </Button>
-            ))}
-          </div>
-        )}
-
-        {/* Football Content */}
-        <div className="min-h-[200px]">
-          {currentSets.length > 0 ? (
-            <TradingCardSetGrid
-              setsWithStats={currentSets}
-              onSetDeleted={onSetDeleted}
-            />
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg">
-                {selectedFootballYear
-                  ? `No football sets found for ${selectedFootballYear}`
-                  : "No football sets found"}
-              </p>
-              <p className="text-muted-foreground/60 text-sm mt-2">
-                {selectedFootballYear
-                  ? "Try selecting a different year or import more football sets"
-                  : "Import some football sets to get started"}
-              </p>
-            </div>
-          )}
-        </div>
-      </TabsContent>
-    </Tabs>
+      </div>
+    </div>
   );
 }

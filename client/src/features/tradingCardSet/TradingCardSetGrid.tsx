@@ -11,13 +11,19 @@ export default function TradingCardSetGrid({
   onSetDeleted,
 }: TradingCardSetGridProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {setsWithStats.map((setWithStats) => (
-        <TradingCardSetCard
+    <div className="grid grid-cols-1 gap-px bg-border/40 sm:grid-cols-2 lg:grid-cols-3 lg:gap-px">
+      {setsWithStats.map((setWithStats, i) => (
+        <div
           key={setWithStats.set.id}
-          setWithStats={setWithStats}
-          onDeleted={onSetDeleted}
-        />
+          className="rise bg-background"
+          style={{ animationDelay: `${Math.min(i * 40, 320)}ms` }}
+        >
+          <TradingCardSetCard
+            setWithStats={setWithStats}
+            onDeleted={onSetDeleted}
+            index={i}
+          />
+        </div>
       ))}
     </div>
   );

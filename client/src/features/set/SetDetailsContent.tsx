@@ -1,8 +1,6 @@
 import { useRouter } from "next/navigation";
-import { Edit3 } from "lucide-react";
+import { ChevronLeft, Edit3 } from "lucide-react";
 import { Card, TradingCardSet } from "@/types";
-import { Card as UICard, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import SetHeader from "./SetHeader";
 import SetStats from "./SetStats";
 import CardGrid from "./CardGrid";
@@ -20,36 +18,69 @@ export default function SetDetailsContent({
   const totalCount = cards.length;
   const router = useRouter();
 
-  const handleEditClick = () => {
-    router.push(`/set/${set.id}/edit`);
-  };
-
   return (
-    <div className="max-w-6xl mx-auto">
-      <UICard className="mb-6">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+    <div className="mx-auto max-w-7xl">
+      {/* Back link */}
+      <button
+        onClick={() => {
+          if (window.history.length > 1) {
+            router.back();
+          } else {
+            router.push("/");
+          }
+        }}
+        className="group mb-10 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+        <span className="font-mono-tight uppercase tracking-[0.22em] text-[10px]">
+          Back to collection
+        </span>
+      </button>
+
+      {/* Editorial masthead */}
+      <section className="rise border-b border-border/60 pb-10">
+        <div className="grid gap-10 md:grid-cols-12 md:items-end">
+          <div className="md:col-span-8">
             <SetHeader set={set} />
-
-            <div className="mt-4 md:mt-0 flex items-center gap-4">
-              <Button
-                variant="outline"
-                onClick={handleEditClick}
-                className="gap-2"
-              >
-                <Edit3 className="w-4 h-4" />
-                Edit
-              </Button>
-              <SetStats ownedCount={ownedCount} totalCount={totalCount} />
-            </div>
           </div>
-        </CardContent>
-      </UICard>
 
-      <section>
-        <h2 className="text-2xl font-semibold mb-6">
-          Cards ({totalCount})
-        </h2>
+          <div className="md:col-span-4 md:pl-8 md:border-l md:border-border/60">
+            <SetStats ownedCount={ownedCount} totalCount={totalCount} />
+            <button
+              onClick={() => router.push(`/set/${set.id}/edit`)}
+              className="group mt-6 inline-flex w-full items-center justify-between gap-3 border border-border bg-card/40 px-4 py-3 text-sm transition-colors hover:border-foreground/60 hover:bg-card"
+            >
+              <span className="flex items-baseline gap-3">
+                <Edit3 className="h-3.5 w-3.5 text-muted-foreground transition-colors group-hover:text-foreground" />
+                <span className="font-medium tracking-tight">Edit set</span>
+              </span>
+              <span className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                Manage
+              </span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Cards index */}
+      <section className="py-10 md:py-14">
+        <div className="mb-6 flex items-baseline justify-between">
+          <div className="flex items-baseline gap-4">
+            <span className="font-mono-tight text-[10px] tracking-[0.28em] text-muted-foreground">
+              §
+            </span>
+            <h2 className="font-display text-2xl font-light tracking-tight">
+              Checklist
+            </h2>
+            <span className="font-mono-tight text-xs tabular-nums text-muted-foreground">
+              ({totalCount})
+            </span>
+          </div>
+          <span className="hidden md:inline font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+            Tap a card to toggle ownership
+          </span>
+        </div>
+
         <CardGrid cards={cards} set={set} />
       </section>
     </div>
