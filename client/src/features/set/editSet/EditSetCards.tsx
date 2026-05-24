@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { Trash2, AlertTriangle } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/utils/trpc";
 import { Card } from "@/types";
-import { Card as UICard, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import EmptyState from "@/components/EmptyState";
 
 interface EditSetCardsProps {
   cards: Card[];
@@ -26,49 +24,41 @@ function DeleteConfirmation({
   isDeleting,
 }: DeleteConfirmationProps) {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <UICard className="max-w-md mx-4">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="w-6 h-6 text-destructive" />
-            <CardTitle className="text-lg">Delete Card</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground mb-6">
-            Are you sure you want to delete card #{card.cardNumber} - {card.playerName}? 
-            This action cannot be undone.
-          </p>
-
-          <div className="flex gap-3 justify-end">
-            <Button
-              variant="outline"
-              onClick={onCancel}
-              disabled={isDeleting}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={onConfirm}
-              disabled={isDeleting}
-              className="gap-2"
-            >
-              {isDeleting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="w-4 h-4" />
-                  Delete Card
-                </>
-              )}
-            </Button>
-          </div>
-        </CardContent>
-      </UICard>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+      <div className="mx-4 w-full max-w-md border border-border bg-card p-6">
+        <p className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-destructive">
+          Delete card
+        </p>
+        <p className="mt-3 font-display text-xl font-light leading-snug">
+          Remove #{card.cardNumber} — {card.playerName}?
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          This cannot be undone.
+        </p>
+        <div className="mt-6 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isDeleting}
+            className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground hover:text-foreground"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className="inline-flex items-center gap-2 border border-destructive bg-destructive px-4 py-2 text-sm text-destructive-foreground"
+          >
+            {isDeleting ? (
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
+            ) : (
+              <Trash2 className="h-3.5 w-3.5" />
+            )}
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -80,105 +70,76 @@ export default function EditSetCards({ cards, setId }: EditSetCardsProps) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const deleteCardMutation = useMutation(trpc.deleteCard.mutationOptions({
-    onMutate: () => {
-      setIsDeleting(true);
-    },
-    onSuccess: () => {
-      setIsDeleting(false);
-      setCardToDelete(null);
-      // Invalidate queries to refresh data using proper tRPC query options
-      queryClient.invalidateQueries(trpc.getSetWithCards.queryOptions({ setId }));
-      queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
-    },
-    onError: (error: any) => {
-      setIsDeleting(false);
-      // You could add error handling here, like showing a toast
-      console.error("Failed to delete card:", error.message);
-    },
-  }));
+  const deleteCardMutation = useMutation(
+    trpc.deleteCard.mutationOptions({
+      onMutate: () => setIsDeleting(true),
+      onSuccess: () => {
+        setIsDeleting(false);
+        setCardToDelete(null);
+        queryClient.invalidateQueries(
+          trpc.getSetWithCards.queryOptions({ setId })
+        );
+        queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
+      },
+      onError: (error) => {
+        setIsDeleting(false);
+        console.error("Failed to delete card:", error.message);
+      },
+    })
+  );
 
-  const handleDeleteClick = (card: Card) => {
-    setCardToDelete(card);
-  };
+  const sorted = [...cards].sort((a, b) => a.cardNumber - b.cardNumber);
 
-  const handleConfirmDelete = () => {
-    if (cardToDelete) {
-      deleteCardMutation.mutate({ cardId: cardToDelete.id });
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setCardToDelete(null);
-  };
-
-  if (cards.length === 0) {
-    return (
-      <UICard>
-        <CardHeader>
-          <CardTitle>Cards in Set</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-center py-8">
-            No cards found in this set.
-          </p>
-        </CardContent>
-      </UICard>
-    );
+  if (sorted.length === 0) {
+    return <EmptyState message="No cards in this set." />;
   }
 
   return (
     <>
-      <UICard>
-        <CardHeader>
-          <CardTitle>Cards in Set ({cards.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 max-h-96 overflow-y-auto">
-            {cards.map((card) => (
-              <div
-                key={card.id}
-                className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted/80 transition-colors"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      #{card.cardNumber}
-                    </span>
-                    <span className="font-medium">
-                      {card.playerName}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {card.cardType}
-                    </span>
-                    {card.isOwned && (
-                      <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                        Owned
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeleteClick(card)}
-                  className="p-2 text-muted-foreground hover:text-destructive"
-                  title="Delete card"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+      <div className="max-h-[28rem] overflow-y-auto border border-border/70">
+        {sorted.map((card) => (
+          <div
+            key={card.id}
+            className="flex items-center justify-between gap-4 border-b border-border/60 px-5 py-4 last:border-b-0"
+          >
+            <div className="min-w-0 flex-1">
+              <div className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                No. {String(card.cardNumber).padStart(3, "0")}
               </div>
-            ))}
+              <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span className="font-display text-lg font-light tracking-tight">
+                  {card.playerName}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {card.cardType}
+                </span>
+                {card.isOwned && (
+                  <span className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-accent">
+                    Owned
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setCardToDelete(card)}
+              aria-label={`Delete ${card.playerName}`}
+              className="rounded p-2 text-muted-foreground/60 transition-colors hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
           </div>
-        </CardContent>
-      </UICard>
+        ))}
+      </div>
 
       {cardToDelete && (
         <DeleteConfirmation
           card={cardToDelete}
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
+          onConfirm={() =>
+            deleteCardMutation.mutate({ cardId: cardToDelete.id })
+          }
+          onCancel={() => setCardToDelete(null)}
           isDeleting={isDeleting}
         />
       )}

@@ -1,9 +1,5 @@
-import { Save } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
+import { ArrowUpRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface EditSetFormProps {
   name: string;
@@ -23,54 +19,71 @@ export default function EditSetForm({
   onSubmit,
 }: EditSetFormProps) {
   return (
-    <Card>
-      <CardContent className="p-4">
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Set Name</Label>
-            <Input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => onNameChange(e.target.value)}
-              placeholder="Enter set name"
-              disabled={isUpdating}
-              required
-            />
-          </div>
+    <form onSubmit={onSubmit} className="space-y-10">
+      <div>
+        <label htmlFor="name" className="eyebrow mb-3 block">
+          Set name
+        </label>
+        <input
+          id="name"
+          type="text"
+          value={name}
+          onChange={(e) => onNameChange(e.target.value)}
+          placeholder="Enter set name"
+          disabled={isUpdating}
+          required
+          className={cn(
+            "w-full border-0 border-b border-border bg-transparent",
+            "py-3 text-lg font-display font-light tracking-tight",
+            "placeholder:text-muted-foreground/50 placeholder:font-sans placeholder:text-base",
+            "outline-none transition-colors focus:border-foreground",
+            "disabled:opacity-50"
+          )}
+        />
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="sport">Sport</Label>
-            <Select value={sport} onValueChange={onSportChange} disabled={isUpdating}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a sport" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Basketball">Basketball</SelectItem>
-                <SelectItem value="Football">Football</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+      <div>
+        <label htmlFor="sport" className="eyebrow mb-3 block">
+          Sport
+        </label>
+        <select
+          id="sport"
+          value={sport}
+          onChange={(e) => onSportChange(e.target.value)}
+          disabled={isUpdating}
+          className={cn(
+            "w-full border-0 border-b border-border bg-transparent",
+            "py-3 text-base text-foreground",
+            "outline-none transition-colors focus:border-foreground",
+            "disabled:opacity-50"
+          )}
+        >
+          <option value="Basketball">Basketball</option>
+          <option value="Football">Football</option>
+        </select>
+      </div>
 
-          <Button
-            type="submit"
-            disabled={isUpdating || !name.trim() || !sport.trim()}
-            className="w-full gap-2"
-          >
-            {isUpdating ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Updating...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4" />
-                Save Changes
-              </>
-            )}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      <button
+        type="submit"
+        disabled={isUpdating || !name.trim() || !sport.trim()}
+        className={cn(
+          "group inline-flex items-center gap-3 border border-foreground bg-foreground px-6 py-3 text-sm text-background transition-all",
+          "hover:bg-transparent hover:text-foreground",
+          "disabled:cursor-not-allowed disabled:opacity-40"
+        )}
+      >
+        {isUpdating ? (
+          <>
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
+            <span className="font-medium tracking-tight">Saving…</span>
+          </>
+        ) : (
+          <>
+            <span className="font-medium tracking-tight">Save changes</span>
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </>
+        )}
+      </button>
+    </form>
   );
 }
