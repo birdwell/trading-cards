@@ -1,5 +1,7 @@
+import 'dotenv/config';
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { appRouter } from './trpc/router';
+import { createContext } from './trpc/context';
 import logger from '../shared/logger';
 
 // Enhanced error handling and logging
@@ -16,7 +18,7 @@ process.on('unhandledRejection', (reason, promise) => {
 // Create HTTP server with CORS enabled
 const server = createHTTPServer({
   router: appRouter,
-  createContext: () => ({}), // Empty context for now
+  createContext,
   middleware: (req, res, next) => {
     // Log incoming requests with more detail
     logger.info({
@@ -47,11 +49,20 @@ const server = createHTTPServer({
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 3002;
 const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
 
+const databaseUrl = process.env.DATABASE_URL ?? '';
+const databaseHost = (() => {
+  try {
+    return new URL(databaseUrl).host || 'unknown';
+  } catch {
+    return databaseUrl.startsWith('postgresql') ? 'postgres' : 'unknown';
+  }
+})();
+
 logger.info({
   port: PORT,
   host: HOST,
   nodeEnv: process.env.NODE_ENV,
-  databaseUrl: process.env.DATABASE_URL
+  databaseHost,
 }, '🚀 Starting tRPC server...');
 
 server.listen(Number(PORT), () => {

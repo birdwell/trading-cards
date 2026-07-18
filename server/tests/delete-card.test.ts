@@ -31,14 +31,12 @@ describe("Card Deletion Tests", () => {
         playerName: "Test Player 1",
         cardType: "Base",
         setId: testSetId,
-        isOwned: false,
       },
       {
         cardNumber: 998,
-        playerName: "Test Player 2", 
+        playerName: "Test Player 2",
         cardType: "Rookie",
         setId: testSetId,
-        isOwned: true,
       },
     ]);
     testCardIds = testCards.map(card => card.id);

@@ -4,8 +4,7 @@ import { generateObject } from "ai";
 import { z } from "zod";
 import logger from "../shared/logger";
 import { Sport } from "../shared/types";
-import { Card } from "../db/types";
-import { createCards } from "./create-cards";
+import { createCards, CreateCardsResult } from "./create-cards";
 import {
   createGeminiModel,
   GEMINI_MODEL_UNAVAILABLE_MESSAGE,
@@ -23,7 +22,7 @@ const cardsSchema = z.array(cardSchema);
 export default async function processCards(
   filePath: string,
   sport: Sport
-): Promise<Card[]> {
+): Promise<CreateCardsResult | null> {
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(filePath);
 
@@ -60,8 +59,8 @@ export default async function processCards(
 
   if (cards.length > 0) {
     return await createCards(filePath, sport, cards);
-  } else {
-    logger.warn("No cards found for the specified sport.");
-    return [];
   }
+
+  logger.warn("No cards found for the specified sport.");
+  return null;
 }

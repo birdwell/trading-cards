@@ -25,22 +25,17 @@ function DeleteConfirmation({
 }: DeleteConfirmationProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-      <div className="mx-4 w-full max-w-md border border-border bg-card p-6">
-        <p className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-destructive">
-          Delete card
-        </p>
-        <p className="mt-3 font-display text-xl font-light leading-snug">
+      <div className="mx-4 w-full max-w-sm rounded-lg border border-border bg-card p-4">
+        <p className="text-sm font-semibold">Delete card</p>
+        <p className="mt-2 text-sm text-muted-foreground">
           Remove #{card.cardNumber} — {card.playerName}?
         </p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          This cannot be undone.
-        </p>
-        <div className="mt-6 flex items-center justify-end gap-3">
+        <div className="mt-4 flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={onCancel}
             disabled={isDeleting}
-            className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground hover:text-foreground"
+            className="rounded-md px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             Cancel
           </button>
@@ -48,12 +43,12 @@ function DeleteConfirmation({
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="inline-flex items-center gap-2 border border-destructive bg-destructive px-4 py-2 text-sm text-destructive-foreground"
+            className="inline-flex items-center gap-1.5 rounded-md bg-destructive px-2.5 py-1.5 text-xs font-medium text-destructive-foreground"
           >
             {isDeleting ? (
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
             ) : (
-              <Trash2 className="h-3.5 w-3.5" />
+              <Trash2 className="h-3 w-3" />
             )}
             Delete
           </button>
@@ -88,7 +83,12 @@ export default function EditSetCards({ cards, setId }: EditSetCardsProps) {
     })
   );
 
-  const sorted = [...cards].sort((a, b) => a.cardNumber - b.cardNumber);
+  const sorted = [...cards].sort((a, b) => {
+    if (a.cardNumber !== b.cardNumber) {
+      return a.cardNumber - b.cardNumber;
+    }
+    return a.cardType.localeCompare(b.cardType);
+  });
 
   if (sorted.length === 0) {
     return <EmptyState message="No cards in this set." />;
@@ -96,38 +96,33 @@ export default function EditSetCards({ cards, setId }: EditSetCardsProps) {
 
   return (
     <>
-      <div className="max-h-[28rem] overflow-y-auto border border-border/70">
+      <div className="binder max-h-[32rem] overflow-y-auto">
         {sorted.map((card) => (
           <div
             key={card.id}
-            className="flex items-center justify-between gap-4 border-b border-border/60 px-5 py-4 last:border-b-0"
+            className="flex items-center gap-3 border-b border-border/70 px-3 py-2 last:border-b-0"
           >
-            <div className="min-w-0 flex-1">
-              <div className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                No. {String(card.cardNumber).padStart(3, "0")}
-              </div>
-              <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <span className="font-display text-lg font-light tracking-tight">
-                  {card.playerName}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {card.cardType}
-                </span>
-                {card.isOwned && (
-                  <span className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-accent">
-                    Owned
-                  </span>
-                )}
-              </div>
-            </div>
-
+            <span className="w-8 shrink-0 font-mono-tight text-xs tabular-nums text-muted-foreground">
+              #{card.cardNumber}
+            </span>
+            <span className="min-w-0 flex-1 truncate text-sm font-medium">
+              {card.playerName}
+            </span>
+            <span className="max-w-[35%] shrink-0 truncate text-xs text-muted-foreground">
+              {card.cardType}
+            </span>
+            {card.isOwned && (
+              <span className="shrink-0 text-[11px] font-medium text-foil">
+                Owned
+              </span>
+            )}
             <button
               type="button"
               onClick={() => setCardToDelete(card)}
               aria-label={`Delete ${card.playerName}`}
-              className="rounded p-2 text-muted-foreground/60 transition-colors hover:text-destructive"
+              className="rounded p-1.5 text-muted-foreground/50 transition-colors hover:text-destructive"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
         ))}

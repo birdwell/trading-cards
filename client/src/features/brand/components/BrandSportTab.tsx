@@ -31,11 +31,9 @@ export default function BrandSportTab({
 
   if (allSets.length === 0) {
     return (
-      <div className="border border-dashed border-border/80 py-16 text-center">
-        <p className="font-display text-xl font-light text-foreground/80">
-          No {sport} sets for this brand.
-        </p>
-        <p className="mt-2 font-mono-tight text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+      <div className="rounded-lg border border-dashed border-border px-6 py-16 text-center">
+        <p className="text-base font-medium">No {sport} sets</p>
+        <p className="mt-2 text-sm text-muted-foreground">
           Import a set to begin
         </p>
       </div>
@@ -43,13 +41,9 @@ export default function BrandSportTab({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-px bg-border/40 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {allSets.map((setWithStats, i) => (
-        <div
-          key={setWithStats.set.id}
-          className="rise bg-background"
-          style={{ animationDelay: `${Math.min(i * 30, 360)}ms` }}
-        >
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {allSets.map((setWithStats) => (
+        <div key={setWithStats.set.id}>
           <BrandSetCard
             set={setWithStats.set}
             stats={setWithStats.stats}

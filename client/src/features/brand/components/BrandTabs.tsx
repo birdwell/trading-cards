@@ -48,7 +48,7 @@ export default function BrandTabs({
 
   return (
     <div>
-      <div className="mb-8 flex border-b border-border/60">
+      <div className="mb-8 inline-flex rounded-lg border border-border p-1">
         {tabs.map(({ id, label, count }) => {
           const active = activeTab === id;
           return (
@@ -56,25 +56,18 @@ export default function BrandTabs({
               key={id}
               type="button"
               onClick={() => setActiveTab(id)}
-              className={`relative pb-3 pr-8 transition-colors ${
+              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                 active
-                  ? "text-foreground"
+                  ? "bg-foreground text-background"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <span className="flex items-baseline gap-3">
-                <span className="font-display text-lg tracking-tight">
-                  {label}
-                </span>
-                <span className="font-mono-tight text-[10px] tabular-nums text-muted-foreground">
-                  {String(count).padStart(2, "0")}
+              <span className="flex items-center gap-2">
+                <span>{label}</span>
+                <span className={active ? "text-background/70" : "text-muted-foreground"}>
+                  {count}
                 </span>
               </span>
-              <span
-                className={`absolute inset-x-0 -bottom-px h-px origin-left bg-foreground transition-transform duration-300 ${
-                  active ? "scale-x-100" : "scale-x-0"
-                }`}
-              />
             </button>
           );
         })}

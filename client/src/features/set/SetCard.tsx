@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { Check } from "lucide-react";
+import { useAuth, useClerk } from "@clerk/nextjs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/utils/trpc";
-import { Card } from "@/types";
+import { Card, SetWithStats, TradingCardSet } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface SetCardProps {
@@ -10,29 +10,83 @@ interface SetCardProps {
   onOwnershipChange?: () => void;
 }
 
+type SetWithCardsData = {
+  set: TradingCardSet;
+  cards: Card[];
+};
+
 export default function SetCard({ card, onOwnershipChange }: SetCardProps) {
-  const [isUpdating, setIsUpdating] = useState(false);
+  const { isSignedIn } = useAuth();
+  const { openSignIn } = useClerk();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+  const setQuery = trpc.getSetWithCards.queryOptions({ setId: card.setId });
+  const setsWithStatsQuery = trpc.getSetsWithStats.queryOptions();
 
   const updateOwnershipMutation = useMutation(
     trpc.updateCardOwnership.mutationOptions({
-      onMutate: () => setIsUpdating(true),
-      onSuccess: () => {
-        queryClient.invalidateQueries(
-          trpc.getSetWithCards.queryOptions({ setId: card.setId })
+      onMutate: async (input) => {
+        await queryClient.cancelQueries(setQuery);
+
+        const previousSet = queryClient.getQueryData<SetWithCardsData>(
+          setQuery.queryKey
         );
-        queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
+        const previousSetsWithStats = queryClient.getQueryData<SetWithStats[]>(
+          setsWithStatsQuery.queryKey
+        );
+
+        queryClient.setQueryData<SetWithCardsData>(setQuery.queryKey, (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            cards: old.cards.map((c) =>
+              c.id === input.cardId ? { ...c, isOwned: input.isOwned } : c
+            ),
+          };
+        });
+
+        const ownedDelta = input.isOwned ? 1 : -1;
+        queryClient.setQueryData<SetWithStats[]>(
+          setsWithStatsQuery.queryKey,
+          (old) => {
+            if (!old) return old;
+            return old.map((entry) => {
+              if (entry.set.id !== card.setId) return entry;
+              return {
+                ...entry,
+                stats: {
+                  ...entry.stats,
+                  ownedCards: Math.max(0, entry.stats.ownedCards + ownedDelta),
+                },
+              };
+            });
+          }
+        );
+
         onOwnershipChange?.();
+        return { previousSet, previousSetsWithStats };
       },
-      onSettled: () => setIsUpdating(false),
-      onError: (err) => {
+      onError: (err, _input, context) => {
+        if (context?.previousSet) {
+          queryClient.setQueryData(setQuery.queryKey, context.previousSet);
+        }
+        if (context?.previousSetsWithStats) {
+          queryClient.setQueryData(
+            setsWithStatsQuery.queryKey,
+            context.previousSetsWithStats
+          );
+        }
         console.error("Failed to update card ownership:", err);
       },
     })
   );
 
   const handleToggleOwnership = () => {
+    if (!isSignedIn) {
+      openSignIn();
+      return;
+    }
+
     updateOwnershipMutation.mutate({
       cardId: card.id,
       isOwned: !card.isOwned,
@@ -43,73 +97,36 @@ export default function SetCard({ card, onOwnershipChange }: SetCardProps) {
     <button
       type="button"
       onClick={handleToggleOwnership}
-      disabled={isUpdating}
       title={card.isOwned ? "Mark as not owned" : "Mark as owned"}
       className={cn(
-        "group relative block w-full cursor-pointer overflow-hidden border border-border/70 bg-card/30 p-5 text-left transition-all duration-300",
-        "hover:border-foreground/40 hover:bg-card",
-        isUpdating && "opacity-60",
-        card.isOwned && "bg-card"
+        "group flex w-full items-center gap-3 border-b border-border/70 px-3 py-2 text-left transition-colors last:border-b-0",
+        "hover:bg-white/[0.03]",
+        card.isOwned && "bg-foil/[0.04]"
       )}
     >
-      {/* Owned ribbon */}
-      {card.isOwned && (
-        <span
-          aria-hidden="true"
-          className="absolute left-0 top-0 h-full w-px bg-accent"
-        />
-      )}
+      <span
+        aria-hidden="true"
+        className={cn(
+          "flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors",
+          card.isOwned
+            ? "border-foil bg-foil text-primary-foreground"
+            : "border-border text-transparent group-hover:border-foreground/40"
+        )}
+      >
+        <Check className="h-3 w-3" />
+      </span>
 
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-            <span className="tabular-nums">
-              No. {String(card.cardNumber).padStart(3, "0")}
-            </span>
-          </div>
+      <span className="w-8 shrink-0 font-mono-tight text-xs tabular-nums text-muted-foreground">
+        #{card.cardNumber}
+      </span>
 
-          <h3 className="mt-2 font-display text-xl font-light leading-tight tracking-tight">
-            {card.playerName}
-          </h3>
+      <span className="min-w-0 flex-1 truncate text-sm font-medium">
+        {card.playerName}
+      </span>
 
-          <p className="mt-2 truncate text-xs text-muted-foreground">
-            {card.cardType}
-          </p>
-        </div>
-
-        {/* Tick mark */}
-        <span
-          aria-hidden="true"
-          className={cn(
-            "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all duration-300",
-            card.isOwned
-              ? "border-accent bg-accent text-accent-foreground"
-              : "border-border text-transparent group-hover:border-foreground/40"
-          )}
-        >
-          <Check
-            className={cn(
-              "h-3.5 w-3.5 transition-transform duration-300",
-              card.isOwned ? "scale-100" : "scale-50 opacity-0"
-            )}
-          />
-        </span>
-      </div>
-
-      {/* Subtle status footer */}
-      <div className="mt-5 flex items-center justify-between">
-        <span
-          className={cn(
-            "font-mono-tight text-[10px] uppercase tracking-[0.22em]",
-            card.isOwned ? "text-accent" : "text-muted-foreground/70"
-          )}
-        >
-          {card.isOwned ? "In collection" : "Missing"}
-        </span>
-        <span className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
-          {card.isOwned ? "Remove" : "Add"}
-        </span>
-      </div>
+      <span className="max-w-[40%] shrink-0 truncate text-xs text-muted-foreground">
+        {card.cardType}
+      </span>
     </button>
   );
 }

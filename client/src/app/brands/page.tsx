@@ -1,46 +1,48 @@
 "use client";
 
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/utils/trpc";
 import DataStateWrapper from "@/components/DataStateWrapper";
 import BrandOverviewGrid from "@/features/brand/BrandOverviewGrid";
+import { buildBrandOverview } from "@/features/brand/buildBrandOverview";
 import Navigation from "@/components/Navigation";
 
 export default function BrandsPage() {
   const trpc = useTRPC();
+  // Same query as Collection — cache hit when navigating between tabs
   const { data, isLoading, error } = useQuery(
-    trpc.getBrandOverview.queryOptions()
+    trpc.getSetsWithStats.queryOptions()
+  );
+
+  const brands = useMemo(
+    () => (data ? buildBrandOverview(data) : undefined),
+    [data]
   );
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="mx-auto max-w-6xl px-6 md:px-8">
         <main>
-          <section className="border-b border-border/60 pb-10 pt-12 md:pt-20">
-            <div className="rise">
-              <div className="eyebrow mb-6 flex items-center gap-3">
-                <span className="h-px w-8 bg-foreground/40" />
-                <span>Publishers — Volume I</span>
-              </div>
-              <h1 className="font-display text-5xl md:text-6xl font-light leading-[0.95] tracking-tight">
-                By{" "}
-                <span className="italic text-accent">brand</span>.
+          <section className="py-8 md:py-10">
+            <div className="max-w-2xl">
+              <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                Brands
               </h1>
-              <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                Collection progress grouped by manufacturer across every set
-                you&apos;ve imported.
+              <p className="mt-3 text-base leading-7 text-muted-foreground">
+                View collection progress by manufacturer.
               </p>
             </div>
           </section>
 
-          <section className="py-10 md:py-14">
+          <section className="pb-16">
             <DataStateWrapper
               isLoading={isLoading}
               error={error?.message}
-              data={data}
+              data={brands}
             >
-              {data && <BrandOverviewGrid brands={data} />}
+              {brands && <BrandOverviewGrid brands={brands} />}
             </DataStateWrapper>
           </section>
         </main>

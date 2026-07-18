@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface EditSetFormProps {
@@ -19,31 +19,35 @@ export default function EditSetForm({
   onSubmit,
 }: EditSetFormProps) {
   return (
-    <form onSubmit={onSubmit} className="space-y-10">
-      <div>
-        <label htmlFor="name" className="eyebrow mb-3 block">
-          Set name
+    <form
+      onSubmit={onSubmit}
+      className="flex flex-col gap-3 sm:flex-row sm:items-end"
+    >
+      <div className="min-w-0 flex-1">
+        <label htmlFor="name" className="mb-1 block text-xs text-muted-foreground">
+          Name
         </label>
         <input
           id="name"
           type="text"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
-          placeholder="Enter set name"
+          placeholder="Set name"
           disabled={isUpdating}
           required
           className={cn(
-            "w-full border-0 border-b border-border bg-transparent",
-            "py-3 text-lg font-display font-light tracking-tight",
-            "placeholder:text-muted-foreground/50 placeholder:font-sans placeholder:text-base",
-            "outline-none transition-colors focus:border-foreground",
+            "h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm",
+            "outline-none transition-colors placeholder:text-muted-foreground focus:border-ring",
             "disabled:opacity-50"
           )}
         />
       </div>
 
-      <div>
-        <label htmlFor="sport" className="eyebrow mb-3 block">
+      <div className="w-full sm:w-40">
+        <label
+          htmlFor="sport"
+          className="mb-1 block text-xs text-muted-foreground"
+        >
           Sport
         </label>
         <select
@@ -52,9 +56,8 @@ export default function EditSetForm({
           onChange={(e) => onSportChange(e.target.value)}
           disabled={isUpdating}
           className={cn(
-            "w-full border-0 border-b border-border bg-transparent",
-            "py-3 text-base text-foreground",
-            "outline-none transition-colors focus:border-foreground",
+            "h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground",
+            "outline-none transition-colors focus:border-ring",
             "disabled:opacity-50"
           )}
         >
@@ -67,20 +70,19 @@ export default function EditSetForm({
         type="submit"
         disabled={isUpdating || !name.trim() || !sport.trim()}
         className={cn(
-          "group inline-flex items-center gap-3 border border-foreground bg-foreground px-6 py-3 text-sm text-background transition-all",
-          "hover:bg-transparent hover:text-foreground",
-          "disabled:cursor-not-allowed disabled:opacity-40"
+          "inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground transition-colors",
+          "hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
         )}
       >
         {isUpdating ? (
           <>
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
-            <span className="font-medium tracking-tight">Saving…</span>
+            Saving…
           </>
         ) : (
           <>
-            <span className="font-medium tracking-tight">Save changes</span>
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            <Save className="h-3 w-3" />
+            Save
           </>
         )}
       </button>

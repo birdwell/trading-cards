@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { ArrowUpRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import BrandProgressBar from "./components/BrandProgressBar";
 
 interface BrandOverviewProps {
@@ -31,11 +31,9 @@ export default function BrandOverviewGrid({ brands }: BrandOverviewProps) {
 
   if (brands.length === 0) {
     return (
-      <div className="border border-dashed border-border/80 py-16 text-center">
-        <p className="font-display text-xl font-light text-foreground/80">
-          No brands on file yet.
-        </p>
-        <p className="mt-2 font-mono-tight text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+      <div className="rounded-lg border border-dashed border-border px-6 py-16 text-center">
+        <p className="text-base font-medium">No brands yet</p>
+        <p className="mt-2 text-sm text-muted-foreground">
           Import a set to begin
         </p>
       </div>
@@ -43,8 +41,8 @@ export default function BrandOverviewGrid({ brands }: BrandOverviewProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-px bg-border/40 sm:grid-cols-2 lg:grid-cols-3">
-      {brands.map((brand, i) => {
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {brands.map((brand) => {
         const years = [...new Set(brand.sets.map((s) => s.set.year))]
           .sort()
           .reverse();
@@ -56,26 +54,25 @@ export default function BrandOverviewGrid({ brands }: BrandOverviewProps) {
             onClick={() =>
               router.push(`/brands/${encodeURIComponent(brand.brand)}`)
             }
-            className="group rise border border-border/70 bg-card/30 p-6 text-left transition-all hover:border-foreground/40 hover:bg-card"
-            style={{ animationDelay: `${Math.min(i * 40, 320)}ms` }}
+            className="group rounded-lg border border-border bg-card p-5 text-left transition-colors hover:border-foreground/30"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <span className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                <span className="text-xs font-medium text-muted-foreground">
                   {brand.overallStats.totalSets}{" "}
                   {brand.overallStats.totalSets === 1 ? "set" : "sets"}
                 </span>
-                <h3 className="mt-1 font-display text-2xl font-light tracking-tight">
+                <h3 className="mt-1 text-base font-semibold">
                   {brand.brand}
                 </h3>
               </div>
-              <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground/60 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
+              <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
             </div>
 
             <div className="mt-6">
-              <div className="mb-2 flex items-baseline justify-between">
-                <span className="eyebrow">Progress</span>
-                <span className="font-mono-tight text-xs tabular-nums">
+              <div className="mb-2 flex items-center justify-between text-xs">
+                <span className="font-medium text-muted-foreground">Progress</span>
+                <span className="tabular-nums text-muted-foreground">
                   {brand.overallStats.completionPercentage}%
                 </span>
               </div>
@@ -84,14 +81,14 @@ export default function BrandOverviewGrid({ brands }: BrandOverviewProps) {
               />
             </div>
 
-            <div className="mt-4 flex items-baseline justify-between font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+            <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
               <span>
                 {brand.overallStats.totalOwnedCards} /{" "}
                 {brand.overallStats.totalCards} cards
               </span>
               {years.length > 0 && (
                 <span className="tabular-nums">
-                  {years.slice(0, 3).join(" · ")}
+                  {years.slice(0, 2).join(", ")}
                   {years.length > 3 ? " …" : ""}
                 </span>
               )}

@@ -4,64 +4,39 @@
 
 @layer base {
   :root {
-    /* Light theme — warm paper */
-    --background: 36 24% 96%;
-    --foreground: 24 14% 12%;
-    --card: 36 24% 99%;
-    --card-foreground: 24 14% 12%;
-    --popover: 36 24% 99%;
-    --popover-foreground: 24 14% 12%;
-    --primary: 24 14% 12%;
-    --primary-foreground: 36 24% 96%;
-    --secondary: 30 12% 90%;
-    --secondary-foreground: 24 14% 12%;
-    --muted: 30 12% 92%;
-    --muted-foreground: 24 8% 40%;
-    --accent: 32 60% 52%;
-    --accent-foreground: 36 24% 99%;
-    --destructive: 4 64% 48%;
-    --destructive-foreground: 36 24% 96%;
-    --border: 30 12% 86%;
-    --input: 30 12% 86%;
-    --ring: 32 60% 52%;
-    --radius: 0.375rem;
+    --background: 222 18% 7%;
+    --foreground: 40 12% 94%;
+    --card: 222 16% 10%;
+    --card-foreground: 40 12% 94%;
+    --popover: 222 16% 10%;
+    --popover-foreground: 40 12% 94%;
+    --primary: 38 72% 58%;
+    --primary-foreground: 222 24% 8%;
+    --secondary: 222 12% 14%;
+    --secondary-foreground: 40 12% 94%;
+    --muted: 222 12% 14%;
+    --muted-foreground: 220 8% 62%;
+    --accent: 38 72% 58%;
+    --accent-foreground: 222 24% 8%;
+    --destructive: 0 72% 57%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 12% 18%;
+    --input: 222 12% 18%;
+    --ring: 38 72% 58%;
+    --radius: 0.75rem;
 
-    --hairline: 30 12% 82%;
-    --ink: 24 14% 12%;
-    --ink-dim: 24 8% 40%;
-    --ink-mute: 24 6% 60%;
-    --paper: 36 24% 96%;
-    --paper-elevated: 36 24% 99%;
+    --foil: 38 72% 58%;
+    --foil-dim: 38 40% 28%;
+    --hairline: 222 12% 18%;
+    --ink: 40 12% 94%;
+    --ink-dim: 220 8% 62%;
+    --ink-mute: 220 8% 46%;
+    --paper: 222 18% 7%;
+    --paper-elevated: 222 16% 10%;
   }
 
   .dark {
-    /* Dark theme — ink on warm graphite */
-    --background: 30 6% 8%;
-    --foreground: 36 18% 92%;
-    --card: 30 6% 11%;
-    --card-foreground: 36 18% 92%;
-    --popover: 30 6% 11%;
-    --popover-foreground: 36 18% 92%;
-    --primary: 36 18% 92%;
-    --primary-foreground: 30 6% 8%;
-    --secondary: 30 5% 16%;
-    --secondary-foreground: 36 18% 92%;
-    --muted: 30 5% 14%;
-    --muted-foreground: 30 8% 60%;
-    --accent: 34 78% 64%;
-    --accent-foreground: 30 6% 8%;
-    --destructive: 4 64% 56%;
-    --destructive-foreground: 36 18% 92%;
-    --border: 30 5% 18%;
-    --input: 30 5% 18%;
-    --ring: 34 78% 64%;
-
-    --hairline: 30 5% 20%;
-    --ink: 36 18% 92%;
-    --ink-dim: 30 8% 60%;
-    --ink-mute: 30 6% 40%;
-    --paper: 30 6% 8%;
-    --paper-elevated: 30 6% 11%;
+    color-scheme: dark;
   }
 }
 
@@ -76,36 +51,33 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
     font-feature-settings: "ss01", "ss02", "cv01", "cv11";
+    line-height: 1.5;
   }
-
-  /* Subtle film grain over the whole app */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 100;
-    opacity: 0.035;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  [class*="shadow-"] {
+    box-shadow: none;
   }
 }
 
 @layer components {
   .font-display {
-    font-family: var(--font-fraunces), ui-serif, Georgia, serif;
-    font-feature-settings: "ss01", "ss02";
-    letter-spacing: -0.02em;
+    font-family: var(--font-display), var(--font-geist-sans), ui-sans-serif,
+      system-ui, sans-serif;
+    letter-spacing: -0.03em;
   }
 
   .font-mono-tight {
-    font-family: var(--font-geist-mono), ui-monospace, monospace;
-    font-feature-settings: "tnum", "zero", "ss01";
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "tnum";
   }
 
   .eyebrow {
-    @apply font-mono-tight uppercase text-[10px] tracking-[0.22em] text-muted-foreground;
+    @apply text-xs font-medium text-muted-foreground;
   }
 
   .hairline {
@@ -113,11 +85,35 @@
   }
 
   .panel {
-    background: linear-gradient(
-      180deg,
-      hsl(var(--paper-elevated)) 0%,
-      hsl(var(--paper)) 100%
-    );
+    background: hsl(var(--card));
+  }
+
+  .binder {
+    overflow: hidden;
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) + 2px);
+    background:
+      linear-gradient(
+        180deg,
+        hsl(222 16% 12% / 0.9) 0%,
+        hsl(var(--card)) 40%
+      );
+    box-shadow:
+      inset 0 1px 0 hsl(40 20% 90% / 0.04),
+      0 0 0 1px hsl(222 20% 4% / 0.4);
+  }
+
+  .foil-track {
+    height: 3px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: hsl(var(--muted));
+  }
+  .foil-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: hsl(var(--foil));
+    transition: width 400ms cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
   .nav-link {
@@ -152,26 +148,41 @@
   }
 
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1 text-xs text-muted-foreground transition-colors;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-transparent px-3.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors;
   }
   .chip:hover {
-    @apply text-foreground border-foreground/30;
+    @apply text-foreground;
+    background: hsl(var(--muted) / 0.6);
   }
   .chip[data-active="true"] {
-    @apply bg-foreground text-background border-foreground;
+    color: hsl(var(--primary-foreground));
+    background: hsl(var(--foil));
+    border-color: transparent;
+  }
+
+  .segment {
+    display: inline-flex;
+    border: 1px solid hsl(var(--border));
+    border-radius: 999px;
+    padding: 3px;
+    background: hsl(222 16% 8% / 0.8);
+    box-shadow: inset 0 1px 0 hsl(40 20% 90% / 0.03);
+  }
+  .segment-item {
+    @apply rounded-full px-4 py-2 text-sm font-medium transition-colors;
+    color: hsl(var(--muted-foreground));
+  }
+  .segment-item:hover {
+    color: hsl(var(--foreground));
+  }
+  .segment-item[data-active="true"] {
+    color: hsl(var(--foreground));
+    background: hsl(var(--card));
+    box-shadow: 0 0 0 1px hsl(var(--border));
   }
 
   .card-tick {
-    /* corner tick marks on collection cards */
-    background:
-      linear-gradient(hsl(var(--hairline)), hsl(var(--hairline))) top left/12px 1px no-repeat,
-      linear-gradient(hsl(var(--hairline)), hsl(var(--hairline))) top left/1px 12px no-repeat,
-      linear-gradient(hsl(var(--hairline)), hsl(var(--hairline))) top right/12px 1px no-repeat,
-      linear-gradient(hsl(var(--hairline)), hsl(var(--hairline))) top right/1px 12px no-repeat,
-      linear-gradient(hsl(var(--hairline)), hsl(var(--hairline))) bottom left/12px 1px no-repeat,
-      linear-gradient(hsl(var(--hairline)), hsl(var(--hairline))) bottom left/1px 12px no-repeat,
-      linear-gradient(hsl(var(--hairline)), hsl(var(--hairline))) bottom right/12px 1px no-repeat,
-      linear-gradient(hsl(var(--hairline)), hsl(var(--hairline))) bottom right/1px 12px no-repeat;
+    background: transparent;
   }
 
   @keyframes loading {
@@ -190,7 +201,7 @@
     }
   }
   .rise {
-    animation: rise 540ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
 
   @keyframes fade {
@@ -198,6 +209,16 @@
     to { opacity: 1; }
   }
   .fade-in {
-    animation: fade 600ms ease both;
+    animation: fade 320ms ease both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rise,
+    .fade-in {
+      animation: none;
+    }
+    .foil-fill {
+      transition: none;
+    }
   }
 }

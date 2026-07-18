@@ -21,10 +21,8 @@ export default function SetDetailsPage() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 text-center">
-          <p className="font-display text-2xl font-light text-destructive">
-            Invalid set ID
-          </p>
+        <div className="mx-auto max-w-6xl px-6 py-16 md:px-8">
+          <p className="text-base font-medium text-destructive">Invalid set ID</p>
         </div>
       </div>
     );
@@ -33,7 +31,7 @@ export default function SetDetailsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-10 md:py-14">
+      <div className="mx-auto max-w-6xl px-6 py-4 pb-16 md:px-8">
         <DataStateWrapper
           isLoading={isLoading}
           error={error?.message}

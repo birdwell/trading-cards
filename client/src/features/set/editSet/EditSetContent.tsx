@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { Copy } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/utils/trpc";
 import { TradingCardSet, Card } from "@/types";
@@ -12,6 +13,10 @@ interface EditSetContentProps {
   cards: Card[];
 }
 
+function isBaseCardType(cardType: string): boolean {
+  return /^base\b/i.test(cardType.trim());
+}
+
 export default function EditSetContent({ set, cards }: EditSetContentProps) {
   const [name, setName] = useState("");
   const [sport, setSport] = useState("");
@@ -20,9 +25,19 @@ export default function EditSetContent({ set, cards }: EditSetContentProps) {
     success: boolean;
     message: string;
   } | null>(null);
+  const [holoResult, setHoloResult] = useState<string | null>(null);
 
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+
+  const baseCount = useMemo(
+    () => cards.filter((card) => isBaseCardType(card.cardType)).length,
+    [cards]
+  );
+  const holoCount = useMemo(
+    () => cards.filter((card) => /^holo\b/i.test(card.cardType.trim())).length,
+    [cards]
+  );
 
   const updateSetMutation = useMutation(
     trpc.updateSet.mutationOptions({
@@ -34,7 +49,7 @@ export default function EditSetContent({ set, cards }: EditSetContentProps) {
         setIsUpdating(false);
         setUpdateResult({
           success: true,
-          message: "Set updated successfully.",
+          message: "Saved.",
         });
         queryClient.invalidateQueries(
           trpc.getSetWithCards.queryOptions({ setId: set.id })
@@ -45,6 +60,22 @@ export default function EditSetContent({ set, cards }: EditSetContentProps) {
       onError: (error) => {
         setIsUpdating(false);
         setUpdateResult({ success: false, message: error.message });
+      },
+    })
+  );
+
+  const duplicateHoloMutation = useMutation(
+    trpc.duplicateBaseAsHolo.mutationOptions({
+      onMutate: () => setHoloResult(null),
+      onSuccess: (data) => {
+        setHoloResult(data.message);
+        queryClient.invalidateQueries(
+          trpc.getSetWithCards.queryOptions({ setId: set.id })
+        );
+        queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
+      },
+      onError: (error) => {
+        setHoloResult(error.message);
       },
     })
   );
@@ -66,40 +97,64 @@ export default function EditSetContent({ set, cards }: EditSetContentProps) {
   };
 
   return (
-    <div className="mx-auto max-w-7xl">
-      <EditSetHeader setId={set.id} setName={set.name} />
+    <div>
+      <EditSetHeader setId={set.id} sport={set.sport} year={set.year} />
 
-      <section className="grid gap-10 py-10 md:grid-cols-12 md:py-14">
-        <div className="md:col-span-7">
-          <EditSetForm
-            name={name}
-            sport={sport}
-            isUpdating={isUpdating}
-            onNameChange={setName}
-            onSportChange={setSport}
-            onSubmit={handleSubmit}
-          />
-        </div>
-
+      <section className="pt-4">
+        <EditSetForm
+          name={name}
+          sport={sport}
+          isUpdating={isUpdating}
+          onNameChange={setName}
+          onSportChange={setSport}
+          onSubmit={handleSubmit}
+        />
         {updateResult && (
-          <div className="md:col-span-5 md:pl-8 md:border-l md:border-border/60">
-            <UpdateResult result={updateResult} setId={set.id} />
+          <div className="mt-3">
+            <UpdateResult result={updateResult} />
           </div>
         )}
       </section>
 
-      <section className="border-t border-border/60 py-10 md:py-14">
-        <div className="mb-6 flex items-baseline gap-4">
-          <span className="font-mono-tight text-[10px] tracking-[0.28em] text-muted-foreground">
-            §
-          </span>
-          <h2 className="font-display text-2xl font-light tracking-tight">
-            Cards
-          </h2>
-          <span className="font-mono-tight text-xs tabular-nums text-muted-foreground">
-            ({cards.length})
-          </span>
+      <section className="pt-6">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs text-muted-foreground">
+            {cards.length} cards
+            {baseCount > 0 && (
+              <span>
+                {" "}
+                · {baseCount} base
+                {holoCount > 0 ? ` · ${holoCount} holo` : ""}
+              </span>
+            )}
+          </p>
+
+          <button
+            type="button"
+            disabled={baseCount === 0 || duplicateHoloMutation.isPending}
+            onClick={() => {
+              if (
+                !window.confirm(
+                  `Create Holo copies of ${baseCount} Base card${baseCount === 1 ? "" : "s"}? Existing Holos are skipped.`
+                )
+              ) {
+                return;
+              }
+              duplicateHoloMutation.mutate({ setId: set.id });
+            }}
+            className="inline-flex h-7 items-center gap-1.5 rounded-md border border-border px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Copy className="h-3 w-3" />
+            {duplicateHoloMutation.isPending
+              ? "Duplicating…"
+              : "Duplicate Base as Holo"}
+          </button>
         </div>
+
+        {holoResult && (
+          <p className="mb-2 text-xs text-muted-foreground">{holoResult}</p>
+        )}
+
         <EditSetCards cards={cards} setId={set.id} />
       </section>
     </div>

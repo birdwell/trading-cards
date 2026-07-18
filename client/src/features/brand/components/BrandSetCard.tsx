@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import BrandProgressBar from "./BrandProgressBar";
 
 interface BrandSetCardProps {
@@ -29,28 +29,24 @@ export default function BrandSetCard({
     <button
       type="button"
       onClick={() => onSetClick(set.id)}
-      className="group w-full border border-border/70 bg-card/30 p-5 text-left transition-all hover:border-foreground/40 hover:bg-card"
+      className="group w-full rounded-lg border border-border bg-card p-5 text-left transition-colors hover:border-foreground/30"
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <span className="font-mono-tight text-xs tabular-nums text-muted-foreground">
-            {set.year}
-          </span>
-          <h4 className="mt-1 font-display text-xl font-light leading-tight tracking-tight">
+          <span className="text-xs font-medium text-muted-foreground">{set.year}</span>
+          <h4 className="mt-1 text-base font-semibold leading-6">
             {set.name}
           </h4>
         </div>
-        <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground/60 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
+        <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
       </div>
 
       <div className="mt-5">
-        <div className="mb-2 flex items-baseline justify-between">
-          <span className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+        <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+          <span>
             {stats.ownedCards} / {stats.totalCards}
           </span>
-          <span className="font-mono-tight text-xs tabular-nums">
-            {percentage}%
-          </span>
+          <span className="tabular-nums">{percentage}%</span>
         </div>
         <BrandProgressBar percentage={percentage} />
       </div>

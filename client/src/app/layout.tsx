@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { Geist, Syne } from "next/font/google";
 import { Providers } from "../components/providers";
 import "./globals.css";
 
@@ -8,20 +8,15 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const syne = Syne({
+  variable: "--font-display",
   subsets: ["latin"],
-});
-
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  axes: ["opsz", "SOFT"],
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "The Almanac — Trading Cards",
-  description: "A curator's catalog of your trading card collection.",
+  title: "Almanac",
+  description: "Track your trading card collection.",
 };
 
 export default function RootLayout({
@@ -31,9 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${syne.variable} antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

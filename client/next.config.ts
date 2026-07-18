@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Allow importing shared helpers from the monorepo root
+  experimental: {
+    externalDir: true,
+  },
 };
 
 export default nextConfig;

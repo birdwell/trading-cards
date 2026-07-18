@@ -8,9 +8,9 @@ export default function BrandProgressBar({
   className = "",
 }: BrandProgressBarProps) {
   return (
-    <div className={`relative h-px w-full bg-border ${className}`}>
+    <div className={`h-1.5 w-full overflow-hidden rounded-full bg-muted ${className}`}>
       <div
-        className="absolute left-0 top-0 h-px bg-foreground transition-all duration-500"
+        className="h-full rounded-full bg-foreground transition-[width] duration-300"
         style={{ width: `${Math.min(Math.max(percentage, 0), 100)}%` }}
       />
     </div>

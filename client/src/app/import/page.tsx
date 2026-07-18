@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/utils/trpc";
 import Navigation from "@/components/Navigation";
-import { ArrowUpRight, Check, X } from "lucide-react";
+import { Check, Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function ImportPage() {
@@ -14,6 +14,7 @@ export default function ImportPage() {
   const [importResult, setImportResult] = useState<{
     success: boolean;
     message: string;
+    setId?: number;
   } | null>(null);
 
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function ImportPage() {
         setImportResult({
           success: true,
           message: data.message,
+          setId: data.setId,
         });
         setUrl("");
         queryClient.invalidateQueries(trpc.getSets.queryOptions());
@@ -52,87 +54,51 @@ export default function ImportPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-10 md:py-14">
-        <main className="mx-auto max-w-3xl">
-          {/* Masthead */}
-          <section className="rise border-b border-border/60 pb-10">
-            <div className="eyebrow mb-6 flex items-center gap-3">
-              <span className="h-px w-8 bg-foreground/40" />
-              <span>New Entry — Volume I</span>
-            </div>
-            <h1 className="font-display text-5xl md:text-6xl font-light leading-[0.95] tracking-tight">
-              Import a{" "}
-              <span className="italic text-accent">set</span>.
-            </h1>
-            <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
-              Paste a Beckett URL and we&apos;ll pull the checklist into your
-              collection.
-            </p>
-          </section>
-
-          {/* Form */}
-          <section className="py-10 md:py-14">
-            <form onSubmit={handleSubmit} className="space-y-10">
+      <div className="mx-auto max-w-6xl px-6 md:px-8">
+        <main className="max-w-2xl py-4 pb-16">
+          <section>
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label
                   htmlFor="url"
-                  className="eyebrow mb-3 block"
+                  className="mb-2 block text-sm font-medium"
                 >
                   Beckett URL
                 </label>
-                <div className="relative">
-                  <input
-                    id="url"
-                    type="url"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="https://www.beckett.com/news/..."
-                    disabled={isImporting}
-                    required
-                    autoFocus
-                    className={cn(
-                      "w-full border-0 border-b border-border bg-transparent",
-                      "py-3 pr-10 text-lg font-display font-light tracking-tight",
-                      "placeholder:text-muted-foreground/50 placeholder:font-sans placeholder:text-base",
-                      "outline-none transition-colors",
-                      "focus:border-foreground",
-                      "disabled:opacity-50"
-                    )}
-                  />
-                  <ArrowUpRight className="absolute right-1 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                </div>
-                <p className="mt-3 font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                  Pull checklists from Beckett articles
+                <input
+                  id="url"
+                  type="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="https://www.beckett.com/news/..."
+                  disabled={isImporting}
+                  required
+                  autoFocus
+                  className="h-12 w-full rounded-md border border-input bg-transparent px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-ring disabled:opacity-50"
+                />
+                <p className="mt-2 text-xs text-muted-foreground">
+                  The article must include a downloadable checklist.
                 </p>
               </div>
 
-              <div className="flex items-center justify-between gap-4">
-                <button
-                  type="button"
-                  onClick={() => router.push("/")}
-                  className="font-mono-tight text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  ← Cancel
-                </button>
-
+              <div>
                 <button
                   type="submit"
                   disabled={isImporting || !url.trim()}
                   className={cn(
-                    "group inline-flex items-center gap-3 border border-foreground bg-foreground px-6 py-3 text-sm text-background transition-all",
-                    "hover:bg-transparent hover:text-foreground",
-                    "disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-foreground disabled:hover:text-background"
+                    "inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors",
+                    "hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
                   )}
                 >
                   {isImporting ? (
                     <>
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
-                      <span className="font-medium tracking-tight">Importing…</span>
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-current" />
+                      Importing…
                     </>
                   ) : (
                     <>
-                      <span className="font-medium tracking-tight">Import set</span>
-                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                      <Upload className="h-4 w-4" />
+                      Import set
                     </>
                   )}
                 </button>
@@ -140,23 +106,22 @@ export default function ImportPage() {
             </form>
           </section>
 
-          {/* Result */}
           {importResult && (
-            <section className="rise pb-10">
+            <section className="pt-6">
               <div
                 className={cn(
-                  "border p-6",
+                  "rounded-lg border p-4",
                   importResult.success
-                    ? "border-accent/40 bg-accent/5"
-                    : "border-destructive/40 bg-destructive/5"
+                    ? "border-border bg-card"
+                    : "border-destructive/50"
                 )}
               >
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-3">
                   <span
                     className={cn(
-                      "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border",
+                      "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border",
                       importResult.success
-                        ? "border-accent bg-accent text-accent-foreground"
+                        ? "border-border text-foreground"
                         : "border-destructive bg-destructive text-destructive-foreground"
                     )}
                   >
@@ -168,27 +133,22 @@ export default function ImportPage() {
                   </span>
 
                   <div className="min-w-0 flex-1">
-                    <p
-                      className={cn(
-                        "font-mono-tight text-[10px] uppercase tracking-[0.22em]",
-                        importResult.success ? "text-accent" : "text-destructive"
-                      )}
-                    >
+                    <p className="text-sm font-medium">
                       {importResult.success ? "Imported" : "Failed"}
                     </p>
-                    <p className="mt-2 font-display text-xl font-light leading-snug">
+                    <p className="mt-1 text-sm leading-6 text-muted-foreground">
                       {importResult.message}
                     </p>
 
-                    {importResult.success && (
+                    {importResult.success && importResult.setId != null && (
                       <button
-                        onClick={() => router.push("/")}
-                        className="group mt-5 inline-flex items-center gap-2 text-sm text-foreground"
+                        type="button"
+                        onClick={() =>
+                          router.push(`/set/${importResult.setId}`)
+                        }
+                        className="mt-3 text-sm font-medium text-primary hover:underline"
                       >
-                        <span className="font-medium tracking-tight">
-                          View collection
-                        </span>
-                        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                        View set
                       </button>
                     )}
                   </div>

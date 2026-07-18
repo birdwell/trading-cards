@@ -1,11 +1,18 @@
-'use client';
+"use client";
 
-import { TRPCProvider } from '../utils/trpc';
+import { ClerkProvider } from "@clerk/nextjs";
+import { TRPCProvider } from "../utils/trpc";
+import BottomTabBar from "./BottomTabBar";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <TRPCProvider>
-      {children}
-    </TRPCProvider>
+    <ClerkProvider>
+      <TRPCProvider>
+        <div className="min-h-screen pb-[calc(4.25rem+env(safe-area-inset-bottom))]">
+          {children}
+        </div>
+        <BottomTabBar />
+      </TRPCProvider>
+    </ClerkProvider>
   );
 }

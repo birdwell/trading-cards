@@ -23,9 +23,10 @@ async function testImportEndpoint() {
     logger.info(
       {
         success: result.success,
+        setId: result.setId,
+        setName: result.setName,
         count: result.count,
         message: result.message,
-        sampleCards: result.cards.slice(0, 3), // Show first 3 cards
       },
       "Import successful!"
     );

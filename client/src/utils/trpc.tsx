@@ -4,6 +4,7 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
+import { useAuth } from "@clerk/nextjs";
 import { useState } from "react";
 import type { AppRouter } from "../../../server/api/trpc/router";
 
@@ -42,15 +43,18 @@ function getQueryClient() {
 function getUrl() {
   // In production, use environment variable or same domain with /trpc path
   // In development, use localhost with backend port
-  const backendPort = process.env.NEXT_PUBLIC_BACKEND_PORT || '3002';
-  
+  const backendPort = process.env.NEXT_PUBLIC_BACKEND_PORT || "3002";
+
   if (typeof window !== "undefined") {
     // Browser environment
     if (window.location.hostname === "localhost") {
       return `http://localhost:${backendPort}`;
     } else {
       // Production - Railway deployment, use same domain with /trpc path
-      return process.env.NEXT_PUBLIC_API_URL || `${window.location.protocol}//${window.location.hostname}/trpc`;
+      return (
+        process.env.NEXT_PUBLIC_API_URL ||
+        `${window.location.protocol}//${window.location.hostname}/trpc`
+      );
     }
   }
   // Server-side rendering - use environment variable or default
@@ -62,12 +66,17 @@ export function TRPCProvider(
     children: React.ReactNode;
   }>
 ) {
+  const { getToken } = useAuth();
   const queryClient = getQueryClient();
   const [trpcClient] = useState(() =>
     createTRPCClient<AppRouter>({
       links: [
         httpBatchLink({
           url: getUrl(),
+          async headers() {
+            const token = await getToken();
+            return token ? { Authorization: `Bearer ${token}` } : {};
+          },
         }),
       ],
     })

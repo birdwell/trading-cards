@@ -1,20 +1,22 @@
-import { drizzle } from 'drizzle-orm/libsql';
-import { createClient } from '@libsql/client';
-import { migrate } from 'drizzle-orm/libsql/migrator';
-import * as schema from './schema';
+import "dotenv/config";
+import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
+import * as schema from "./schema";
 
-// Create the database client
-const client = createClient({
-  url: 'file:./database.db',
-});
+const databaseUrl = process.env.DATABASE_URL;
 
-// Create the drizzle instance
-export const db = drizzle(client, { schema });
-
-// Function to run migrations
-export async function runMigrations() {
-  await migrate(db, { migrationsFolder: './drizzle' });
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is required");
 }
 
-// Export schema for use in other files
-export * from './schema';
+if (databaseUrl.startsWith("file:")) {
+  throw new Error(
+    "DATABASE_URL still points at SQLite. Set it to your Railway Postgres URL."
+  );
+}
+
+const pool = new pg.Pool({ connectionString: databaseUrl });
+
+export const db = drizzle(pool, { schema });
+
+export * from "./schema";

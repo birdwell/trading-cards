@@ -28,11 +28,17 @@ async function proxyToBackend(request: NextRequest) {
     
     console.log(`Proxying request to: ${backendUrl}`);
     
+    const headers: Record<string, string> = {
+      'Content-Type': request.headers.get('content-type') || 'application/json',
+    };
+    const authorization = request.headers.get('authorization');
+    if (authorization) {
+      headers.Authorization = authorization;
+    }
+
     const response = await fetch(backendUrl, {
       method: request.method,
-      headers: {
-        'Content-Type': request.headers.get('content-type') || 'application/json',
-      },
+      headers,
       body: request.method !== 'GET' ? await request.text() : undefined,
     });
 

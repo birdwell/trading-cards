@@ -62,21 +62,18 @@ export default function BrandDetailsContent({ brandData }: BrandDetailsProps) {
   const footballCount = footballData.reduce((n, g) => n + g.sets.length, 0);
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div>
       <BrandHeader
         brand={brandData.brand}
         overallStats={brandData.overallStats}
-        onBackToBrands={() => router.push("/brands")}
       />
 
-      <section className="py-10 md:py-14">
-        <div className="mb-6 flex items-baseline gap-4">
-          <span className="font-mono-tight text-[10px] tracking-[0.28em] text-muted-foreground">
-            §
-          </span>
-          <h2 className="font-display text-2xl font-light tracking-tight">
-            Sets
-          </h2>
+      <section className="pt-12 md:pt-16">
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold tracking-tight">Sets</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Filter by sport.
+          </p>
         </div>
 
         <BrandTabs

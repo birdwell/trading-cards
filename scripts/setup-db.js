@@ -1,24 +1,28 @@
 #!/usr/bin/env node
 
-import { execSync } from 'child_process';
-import { existsSync, mkdirSync } from 'fs';
-import { dirname } from 'path';
+import "dotenv/config";
+import { execSync } from "child_process";
 
-// Ensure database directory exists
-const dbPath = './database.db';
-const dbDir = dirname(dbPath);
-
-if (!existsSync(dbDir) && dbDir !== '.') {
-  console.log(`Creating database directory: ${dbDir}`);
-  mkdirSync(dbDir, { recursive: true });
+if (!process.env.DATABASE_URL) {
+  console.error("DATABASE_URL is required");
+  process.exit(1);
 }
 
-// Run database migrations
-console.log('Running database migrations...');
+if (process.env.DATABASE_URL.startsWith("file:")) {
+  console.error(
+    "DATABASE_URL still points at SQLite. Set it to your Railway Postgres URL."
+  );
+  process.exit(1);
+}
+
+console.log("Pushing database schema to Postgres...");
 try {
-  execSync('pnpm exec drizzle-kit push', { stdio: 'inherit' });
-  console.log('Database migrations completed successfully!');
+  execSync("pnpm exec drizzle-kit push", { stdio: "inherit" });
+  console.log("Database schema sync completed successfully!");
 } catch (error) {
-  console.error('Database migration failed:', error.message);
+  console.error(
+    "Database schema sync failed:",
+    error instanceof Error ? error.message : error
+  );
   process.exit(1);
 }
