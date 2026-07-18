@@ -2,22 +2,25 @@
 
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createTRPCClient, httpBatchLink } from "@trpc/client";
+import { createTRPCClient, httpBatchStreamLink } from "@trpc/client";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 import { useAuth } from "@clerk/nextjs";
 import { useState } from "react";
 import type { AppRouter } from "../../../server/api/trpc/router";
 
 // Create tRPC context with type-safe providers and hooks
-export const { TRPCProvider: TRPCContextProvider, useTRPC } =
-  createTRPCContext<AppRouter>();
+export const {
+  TRPCProvider: TRPCContextProvider,
+  useTRPC,
+  useTRPCClient,
+} = createTRPCContext<AppRouter>();
 
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
         // With SSR, we usually want to set some default staleTime
-        // above 0 to avoid refetching immediately on the client
+        // above 0 to avoid refetching initially on the client
         staleTime: 60 * 1000,
       },
     },
@@ -71,7 +74,7 @@ export function TRPCProvider(
   const [trpcClient] = useState(() =>
     createTRPCClient<AppRouter>({
       links: [
-        httpBatchLink({
+        httpBatchStreamLink({
           url: getUrl(),
           async headers() {
             const token = await getToken();
