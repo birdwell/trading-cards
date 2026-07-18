@@ -11,27 +11,23 @@ export const appRouter = router({
         url: z.url(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async function* ({ input }) {
       try {
         logger.info(`tRPC import endpoint called with URL: ${input.url}`);
-        const result = await importCardsFromUrl(input.url);
 
-        if (!result) {
+        let completed = false;
+        for await (const event of importCardsFromUrl(input.url)) {
+          yield event;
+          if (event.type === "complete") {
+            completed = true;
+          }
+        }
+
+        if (!completed) {
           throw new Error(
             "No cards were imported. Check that the Beckett page has a downloadable checklist."
           );
         }
-
-        return {
-          success: true,
-          setId: result.setId,
-          setName: result.setName,
-          count: result.cards.length,
-          alreadyExisted: result.alreadyExisted,
-          message: result.alreadyExisted
-            ? `${result.setName} was already imported (${result.cards.length} cards).`
-            : `Imported ${result.cards.length} cards into ${result.setName}.`,
-        };
       } catch (error) {
         logger.error(
           `Error importing cards: ${
