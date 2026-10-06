@@ -49,16 +49,16 @@ function getUrl() {
   const backendPort = process.env.NEXT_PUBLIC_BACKEND_PORT || "3002";
 
   if (typeof window !== "undefined") {
-    // Browser environment
-    if (window.location.hostname === "localhost") {
+    // next dev talks to the tRPC server directly. Production (including a
+    // local `next start`) uses the same-origin /trpc proxy, matching Railway.
+    if (
+      process.env.NODE_ENV !== "production" &&
+      window.location.hostname === "localhost"
+    ) {
       return `http://localhost:${backendPort}`;
-    } else {
-      // Production - Railway deployment, use same domain with /trpc path
-      return (
-        process.env.NEXT_PUBLIC_API_URL ||
-        `${window.location.protocol}//${window.location.hostname}/trpc`
-      );
     }
+
+    return process.env.NEXT_PUBLIC_API_URL || `${window.location.origin}/trpc`;
   }
   // Server-side rendering - use environment variable or default
   return process.env.NEXT_PUBLIC_API_URL || `http://localhost:${backendPort}`;

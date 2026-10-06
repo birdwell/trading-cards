@@ -32,7 +32,7 @@ const server = createHTTPServer({
     // Enable CORS for all origins (you can restrict this to specific origins in production)
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, trpc-accept');
     
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
