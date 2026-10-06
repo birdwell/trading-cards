@@ -91,17 +91,17 @@ describe("Card Deletion Tests", () => {
     });
 
     it("should update set stats after card deletion", async () => {
-      // Get initial stats
-      const statsBefore = await tradingCards.getSetStats(testSetId);
+      const userId = "test-user";
+      const ownedCard = testCardIds[1];
+      await tradingCards.cards.updateOwnership(ownedCard, userId, true);
+
+      const statsBefore = await tradingCards.getSetStats(testSetId, userId);
       expect(statsBefore!.totalCards).toBe(2);
       expect(statsBefore!.ownedCards).toBe(1);
-      
-      // Delete the owned card
-      const ownedCard = testCardIds[1]; // Test Player 2 is owned
+
       await tradingCards.cards.delete(ownedCard);
-      
-      // Get updated stats
-      const statsAfter = await tradingCards.getSetStats(testSetId);
+
+      const statsAfter = await tradingCards.getSetStats(testSetId, userId);
       expect(statsAfter!.totalCards).toBe(1);
       expect(statsAfter!.ownedCards).toBe(0);
     });

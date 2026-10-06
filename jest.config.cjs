@@ -6,6 +6,7 @@ module.exports = {
   testEnvironment: 'node',
   roots: ['<rootDir>/server'],
   testMatch: ['<rootDir>/server/**/*.test.ts'],
+  setupFilesAfterEnv: ['<rootDir>/server/tests/jest.setup.ts'],
   testPathIgnorePatterns: hasDatabase
     ? []
     : [

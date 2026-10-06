@@ -15,8 +15,15 @@ if (databaseUrl.startsWith("file:")) {
   );
 }
 
-const pool = new pg.Pool({ connectionString: databaseUrl });
+const pool = new pg.Pool({
+  connectionString: databaseUrl,
+  max: 5,
+});
 
 export const db = drizzle(pool, { schema });
+
+export async function closeDb(): Promise<void> {
+  await pool.end();
+}
 
 export * from "./schema";
