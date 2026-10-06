@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTRPCClient, httpBatchStreamLink } from "@trpc/client";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 import { useAuth } from "@clerk/nextjs";
-import { useState } from "react";
+import { hasClerkPublishableKey } from "@/lib/is-clerk-configured";
 import type { AppRouter } from "../../../server/api/trpc/router";
 
 // Create tRPC context with type-safe providers and hooks
@@ -49,19 +49,67 @@ function getUrl() {
   const backendPort = process.env.NEXT_PUBLIC_BACKEND_PORT || "3002";
 
   if (typeof window !== "undefined") {
-    // Browser environment
-    if (window.location.hostname === "localhost") {
+    // next dev talks to the tRPC server directly. Production (including a
+    // local `next start`) uses the same-origin /trpc proxy, matching Railway.
+    if (
+      process.env.NODE_ENV !== "production" &&
+      window.location.hostname === "localhost"
+    ) {
       return `http://localhost:${backendPort}`;
-    } else {
-      // Production - Railway deployment, use same domain with /trpc path
-      return (
-        process.env.NEXT_PUBLIC_API_URL ||
-        `${window.location.protocol}//${window.location.hostname}/trpc`
-      );
     }
+
+    return process.env.NEXT_PUBLIC_API_URL || `${window.location.origin}/trpc`;
   }
   // Server-side rendering - use environment variable or default
   return process.env.NEXT_PUBLIC_API_URL || `http://localhost:${backendPort}`;
+}
+
+function createAppTRPCClient(
+  getToken?: () => Promise<string | null>
+) {
+  return createTRPCClient<AppRouter>({
+    links: [
+      httpBatchStreamLink({
+        url: getUrl(),
+        async headers() {
+          const token = getToken ? await getToken() : null;
+          return token ? { Authorization: `Bearer ${token}` } : {};
+        },
+      }),
+    ],
+  });
+}
+
+function TRPCClientProvider({
+  children,
+  getToken,
+}: Readonly<{
+  children: React.ReactNode;
+  getToken?: () => Promise<string | null>;
+}>) {
+  const queryClient = getQueryClient();
+  const [trpcClient] = useState(() => createAppTRPCClient(getToken));
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TRPCContextProvider trpcClient={trpcClient} queryClient={queryClient}>
+        {children}
+      </TRPCContextProvider>
+    </QueryClientProvider>
+  );
+}
+
+function ClerkTRPCProvider({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const { getToken } = useAuth();
+  return (
+    <TRPCClientProvider getToken={() => getToken()}>
+      {children}
+    </TRPCClientProvider>
+  );
 }
 
 export function TRPCProvider(
@@ -69,27 +117,9 @@ export function TRPCProvider(
     children: React.ReactNode;
   }>
 ) {
-  const { getToken } = useAuth();
-  const queryClient = getQueryClient();
-  const [trpcClient] = useState(() =>
-    createTRPCClient<AppRouter>({
-      links: [
-        httpBatchStreamLink({
-          url: getUrl(),
-          async headers() {
-            const token = await getToken();
-            return token ? { Authorization: `Bearer ${token}` } : {};
-          },
-        }),
-      ],
-    })
-  );
+  if (!hasClerkPublishableKey()) {
+    return <TRPCClientProvider>{props.children}</TRPCClientProvider>;
+  }
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TRPCContextProvider trpcClient={trpcClient} queryClient={queryClient}>
-        {props.children}
-      </TRPCContextProvider>
-    </QueryClientProvider>
-  );
+  return <ClerkTRPCProvider>{props.children}</ClerkTRPCProvider>;
 }

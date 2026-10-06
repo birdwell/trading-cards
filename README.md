@@ -1,6 +1,6 @@
 # Trading Cards Database
 
-A TypeScript application that automatically imports and manages trading card data from beckett.com. The application scrapes trading card checklists from URLs, downloads Excel files, and stores the card information in a SQLite database.
+A TypeScript application that automatically imports and manages trading card data from beckett.com. The application scrapes trading card checklists from URLs, downloads Excel files, and stores the card information in Postgres via Drizzle ORM.
 
 **Live app:** [https://sportscards.up.railway.app](https://sportscards.up.railway.app)
 
@@ -8,7 +8,7 @@ A TypeScript application that automatically imports and manages trading card dat
 
 - 🃏 **Automated Card Import**: Import trading card data directly from URLs
 - 📊 **Excel Processing**: Parse and process Excel checklist files
-- 🗄️ **Database Storage**: Store card data in SQLite with Drizzle ORM
+- 🗄️ **Database Storage**: Store card data in Postgres with Drizzle ORM
 - 🏀 **Multi-Sport Support**: Support for Basketball and Football cards
 - 🧪 **Comprehensive Testing**: Full test suite with Jest
 - 📝 **Type Safety**: Written in TypeScript for better code reliability
@@ -185,12 +185,14 @@ npm test -- --watch
 Create a `.env` file in the root directory:
 
 ```env
-# Database configuration
-DATABASE_URL=./database.db
+# Database configuration (Postgres)
+DATABASE_URL=postgresql://postgres:password@host:port/railway
 
 # Logging level
 LOG_LEVEL=info
 ```
+
+See `.env.example` and `DEPLOYMENT.md` for Clerk, Gemini, and Railway settings.
 
 ### TypeScript Configuration
 
@@ -216,8 +218,8 @@ This project is licensed under the MIT License.
 
 **Database connection errors:**
 
-- Ensure the database file exists: `ls database.db`
-- Run migrations: `npm run db:migrate`
+- Ensure `DATABASE_URL` is a Postgres URL, not `file:./database.db`
+- Run `npm run db:setup` to sync the schema
 
 **Excel parsing errors:**
 

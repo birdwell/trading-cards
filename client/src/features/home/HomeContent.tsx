@@ -8,7 +8,7 @@ import { SetWithStats } from "@/types";
 import { useTRPC } from "@/utils/trpc";
 
 interface HomeContentProps {
-  initialSetsWithStats: SetWithStats[];
+  initialSetsWithStats?: SetWithStats[];
 }
 
 export default function HomeContent({
@@ -21,7 +21,7 @@ export default function HomeContent({
     error,
   } = useQuery({
     ...trpc.getSetsWithStats.queryOptions(),
-    initialData: initialSetsWithStats,
+    ...(initialSetsWithStats ? { initialData: initialSetsWithStats } : {}),
   });
 
   return (
@@ -35,7 +35,7 @@ export default function HomeContent({
             error={error?.message}
             data={setsWithStats}
           >
-            <SportTabs setsWithStats={setsWithStats} />
+            {setsWithStats && <SportTabs setsWithStats={setsWithStats} />}
           </DataStateWrapper>
         </main>
       </div>

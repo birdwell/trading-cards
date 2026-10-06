@@ -24,7 +24,7 @@ function corsHeaders(): HeadersInit {
   return {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, trpc-accept",
   };
 }
 
@@ -34,13 +34,17 @@ async function proxyToBackend(request: NextRequest) {
     const backendUrl = `${BACKEND_URL}${url.pathname.replace("/trpc", "")}${url.search}`;
 
     const headers: Record<string, string> = {};
-    const contentType = request.headers.get("content-type");
-    if (contentType) {
-      headers["Content-Type"] = contentType;
-    }
-    const authorization = request.headers.get("authorization");
-    if (authorization) {
-      headers.Authorization = authorization;
+    const requestHeadersToForward = [
+      "content-type",
+      "authorization",
+      "trpc-accept",
+    ] as const;
+
+    for (const header of requestHeadersToForward) {
+      const value = request.headers.get(header);
+      if (value) {
+        headers[header] = value;
+      }
     }
 
     const response = await fetch(backendUrl, {
@@ -60,6 +64,7 @@ async function proxyToBackend(request: NextRequest) {
       "cache-control",
       "connection",
       "transfer-encoding",
+      "vary",
       "x-accel-buffering",
     ] as const;
 

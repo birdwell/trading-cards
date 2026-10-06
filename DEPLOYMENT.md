@@ -2,48 +2,59 @@
 
 ## Railway Deployment (Recommended)
 
-Railway is perfect for this full-stack application and CAN deploy both frontend and backend together in a single service.
+This is a full-stack app: a Next.js client and a tRPC server run together in one Railway service. The database is **Postgres**, not SQLite.
 
 ### Prerequisites
 1. GitHub account with your code pushed to a repository
 2. Railway account (sign up at [railway.app](https://railway.app))
 
-### Step 1: Deploy Full-Stack Application
+### Step 1: Deploy the application
 1. Go to [railway.app](https://railway.app) and sign in
 2. Click "New Project" → "Deploy from GitHub repo"
-3. Select your trading-cards repository
-4. Railway will automatically detect it's a Node.js project and build both client and server
-5. Set these environment variables in Railway:
+3. Select this repository
+4. Add a **Postgres** plugin to the same project
+5. Set these environment variables on the app service:
+
    ```
    NODE_ENV=production
-   DATABASE_URL=file:./database.db
+   DATABASE_URL=${{Postgres.DATABASE_URL}}
    BACKEND_PORT=3002
-   FRONTEND_PORT=3000
    NEXT_PUBLIC_BACKEND_PORT=3002
    ```
-6. **Important**: Railway will automatically assign a PORT - don't set it manually
-7. Enable persistent storage for your SQLite database file
-8. Your full application will be available at: `https://your-app-name.up.railway.app`
 
-### Step 2: How It Works
-- Railway runs `npm run build` which builds both the Next.js client and TypeScript server
-- Railway installs Chromium with `npx playwright install --with-deps chromium` so production imports can scrape checklist pages
-- Railway runs `npm start` which starts both the tRPC server (BACKEND_PORT) and Next.js client (FRONTEND_PORT) using `concurrently`
-- The Next.js client automatically detects it's in production and connects to the tRPC server on the same domain
-- Both services run simultaneously in the same Railway container
+6. **Do not** set `DATABASE_URL` to `file:./database.db`. The app now uses Drizzle + `pg` and will refuse to start with a SQLite URL.
+7. **Do not** set `PORT` yourself. Railway assigns it and Next.js listens on that port. The tRPC server listens on `BACKEND_PORT` (3002) inside the same container.
+8. Optional, for sign-in and per-user card ownership:
 
-### Step 3: Test the Application
-1. Visit your Railway URL
-2. You should see your Next.js frontend
-3. The app should automatically connect to the tRPC backend running on the same domain
-4. Check the Network tab in browser dev tools to see API calls
+   ```
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+   CLERK_SECRET_KEY=sk_live_...
+   ```
 
-### Step 3: Database Setup
-Your existing SQLite database will work perfectly:
+   Create those keys at [https://dashboard.clerk.com](https://dashboard.clerk.com). After adding `NEXT_PUBLIC_*` values, **redeploy** so Next.js can inline them at build time.
 
-1. **Persistent Storage**: Railway will maintain your `database.db` file between deployments
-2. **Migrations**: Your database setup script will run automatically on startup
-3. **No Changes Needed**: Your current database configuration is production-ready
+9. Optional import support:
+
+   ```
+   GOOGLE_GENERATIVE_AI_API_KEY=...
+   GEMINI_MODEL=gemini-2.5-flash
+   ```
+
+### Step 2: How it starts
+- Railway runs `npm run build` (Next.js client + TypeScript check) and installs Playwright Chromium
+- Railway runs `npm start`, which:
+  1. Syncs the Postgres schema (`drizzle-kit push`)
+  2. Starts the tRPC server on port 3002
+  3. Starts Next.js on Railway's `PORT`
+- Browser API calls go to `/trpc` on the same host; Next.js proxies them to `localhost:3002`
+
+The homepage still renders if Clerk keys are missing or the first tRPC preload fails. Sign-in and ownership toggles stay disabled until Clerk is configured. Collection data requires a working `DATABASE_URL`.
+
+### Step 3: What Josh needs to check in Railway if the site 500s
+1. **Postgres is attached** and `DATABASE_URL` is the Postgres URL from that plugin (not a leftover SQLite `file:` value).
+2. **Redeploy** after changing env vars, especially `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`.
+3. Confirm the start command is `npm start` / `npm run start` (see `Procfile` and `package.json`).
+4. Clerk keys are optional for browsing. They are required for Sign in and marking cards owned.
 
 ## Alternative: Render Deployment
 
@@ -59,46 +70,24 @@ Your existing SQLite database will work perfectly:
    - Environment: Node.js
 
 ### Step 2: Database
-- Enable persistent disk storage for SQLite database
-- Set DATABASE_URL environment variable to `file:./database.db`
+- Provision Postgres
+- Set `DATABASE_URL` to the Postgres connection string
 
-## Alternative: Vercel + Railway Hybrid
+## Environment Variables
 
-### Frontend (Vercel)
-1. Connect your GitHub repo to Vercel
-2. Set build settings:
-   - Framework: Next.js
-   - Root Directory: `client`
-   - Build Command: `npm run build`
-
-### Backend (Railway)
-1. Deploy only the server part to Railway
-2. Update the frontend's API URL to point to Railway backend
-
-## Environment Variables Needed
-
-### Production Environment Variables:
+### Required in production
 ```
 NODE_ENV=production
-PORT=3002
-DATABASE_URL=file:./database.db
-NEXT_PUBLIC_API_URL=https://your-backend-url.railway.app
+DATABASE_URL=postgresql://...
+BACKEND_PORT=3002
+NEXT_PUBLIC_BACKEND_PORT=3002
 ```
 
-## SQLite in Production
-
-Your SQLite database is perfectly suited for production deployment:
-
-### Benefits:
-- **Zero Configuration**: No database server setup required
-- **Fast Performance**: Excellent for read-heavy workloads like your trading cards app
-- **Reliability**: SQLite is battle-tested and used by many production applications
-- **Backup Simplicity**: Just copy the database.db file
-- **Cost Effective**: No database hosting fees
-
-### Considerations:
-- **Concurrent Writes**: SQLite handles multiple readers but serializes writes
-- **File Storage**: Ensure your hosting platform provides persistent storage
-- **Backups**: Set up regular backups of your database.db file
-
-Your current setup is production-ready! Just deploy and go.
+### Optional
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+GOOGLE_GENERATIVE_AI_API_KEY=
+GEMINI_MODEL=gemini-2.5-flash
+NEXT_PUBLIC_API_URL=
+```
