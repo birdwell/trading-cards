@@ -5,6 +5,7 @@
     "buildCommand": "npm run build && npx playwright install --with-deps chromium"
   },
   "deploy": {
+    "startCommand": "npm run start",
     "numReplicas": 1,
     "sleepApplication": false,
     "restartPolicyType": "ON_FAILURE"

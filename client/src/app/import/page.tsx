@@ -1,16 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/utils/trpc";
 import Navigation from "@/components/Navigation";
 import { Check, Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  IMPORT_STAGE_LABELS,
+  type ImportEvent,
+  type ImportStage,
+} from "../../../../server/core/import-events";
+
+function assertNever(value: never): never {
+  throw new Error(`Unexpected import event: ${JSON.stringify(value)}`);
+}
+
+async function consumeImportStream(
+  stream: AsyncIterable<ImportEvent>,
+  onProgress: (stage: ImportStage) => void
+): Promise<Extract<ImportEvent, { type: "complete" }> | null> {
+  let completed: Extract<ImportEvent, { type: "complete" }> | null = null;
+
+  for await (const event of stream) {
+    switch (event.type) {
+      case "progress":
+        onProgress(event.stage);
+        break;
+      case "complete":
+        completed = event;
+        break;
+      default:
+        assertNever(event);
+    }
+  }
+
+  return completed;
+}
 
 export default function ImportPage() {
   const [url, setUrl] = useState("");
   const [isImporting, setIsImporting] = useState(false);
+  const [importStage, setImportStage] = useState<ImportStage | null>(null);
   const [importResult, setImportResult] = useState<{
     success: boolean;
     message: string;
@@ -21,34 +53,47 @@ export default function ImportPage() {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
-  const importMutation = useMutation(
-    trpc.import.mutationOptions({
-      onMutate: () => {
-        setIsImporting(true);
-        setImportResult(null);
-      },
-      onSuccess: (data) => {
-        setIsImporting(false);
-        setImportResult({
-          success: true,
-          message: data.message,
-          setId: data.setId,
-        });
-        setUrl("");
-        queryClient.invalidateQueries(trpc.getSets.queryOptions());
-        queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
-      },
-      onError: (error) => {
-        setIsImporting(false);
-        setImportResult({ success: false, message: error.message });
-      },
-    })
-  );
+  const importMutation = useMutation(trpc.import.mutationOptions());
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
-    importMutation.mutate({ url: url.trim() });
+
+    setIsImporting(true);
+    setImportStage(null);
+    setImportResult(null);
+
+    try {
+      const stream = await importMutation.mutateAsync({ url: url.trim() });
+      const completed = await consumeImportStream(stream, setImportStage);
+
+      if (!completed) {
+        setImportResult({
+          success: false,
+          message:
+            "No cards were imported. Check that the Beckett page has a downloadable checklist.",
+        });
+        return;
+      }
+
+      setImportResult({
+        success: true,
+        message: completed.message,
+        setId: completed.setId,
+      });
+      setUrl("");
+      queryClient.invalidateQueries(trpc.getSets.queryOptions());
+      queryClient.invalidateQueries(trpc.getSetsWithStats.queryOptions());
+    } catch (error) {
+      setImportResult({
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Failed to import cards",
+      });
+    } finally {
+      setIsImporting(false);
+      setImportStage(null);
+    }
   };
 
   return (
@@ -93,7 +138,9 @@ export default function ImportPage() {
                   {isImporting ? (
                     <>
                       <span className="h-2 w-2 animate-pulse rounded-full bg-current" />
-                      Importing…
+                      {importStage
+                        ? IMPORT_STAGE_LABELS[importStage]
+                        : "Importing…"}
                     </>
                   ) : (
                     <>
