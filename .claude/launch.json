@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "trading-cards-dev",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "PORT=3001 pnpm run dev"],
+      "port": 3001
+    }
+  ]
+}

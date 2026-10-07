@@ -1,15 +1,21 @@
-import { SetWithStats } from "../../types";
+import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
 interface TradingCardSetCardProps {
-  setWithStats: SetWithStats;
+  setWithStats: {
+    set: { id: number; name: string };
+    stats: { ownedCards: number; totalCards: number };
+  };
   index?: number;
+  /** Replaces the set name, e.g. the season on a brand page. */
+  title?: ReactNode;
 }
 
 export default function TradingCardSetCard({
   setWithStats,
   index = 0,
+  title,
 }: TradingCardSetCardProps) {
   const router = useRouter();
 
@@ -30,7 +36,7 @@ export default function TradingCardSetCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-3">
             <h3 className="font-display truncate text-[0.95rem] font-semibold tracking-tight text-foreground transition-colors group-hover:text-white">
-              {set.name}
+              {title ?? set.name}
             </h3>
             <span className="shrink-0 font-mono-tight text-xs tabular-nums text-muted-foreground">
               <span className="text-foreground/90">{stats.ownedCards}</span>
@@ -39,16 +45,11 @@ export default function TradingCardSetCard({
               </span>
             </span>
           </div>
-          <div className="mt-2.5 flex items-center gap-3">
-            <div className="foil-track min-w-0 flex-1">
-              <div
-                className="foil-fill"
-                style={{ width: `${Math.max(percentage, 0)}%` }}
-              />
-            </div>
-            <span className="w-8 shrink-0 text-right font-mono-tight text-[11px] tabular-nums text-muted-foreground">
-              {Math.round(percentage)}%
-            </span>
+          <div className="foil-track mt-2.5">
+            <div
+              className="foil-fill"
+              style={{ width: `${Math.max(percentage, 0)}%` }}
+            />
           </div>
         </div>
         <ChevronRight

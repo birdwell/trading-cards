@@ -109,6 +109,18 @@ export function getBrand(setName: string): string {
   return words[0] || setName;
 }
 
+// League and line abbreviations that title-casing would mangle ("Nba").
+const UPPERCASE_BRAND_WORDS = new Set([
+  "nba",
+  "nfl",
+  "mlb",
+  "nhl",
+  "wnba",
+  "ufc",
+  "sp",
+  "spx",
+]);
+
 /**
  * Normalizes brand name for consistent grouping
  * @param brand - The brand name to normalize
@@ -120,6 +132,10 @@ export function normalizeBrand(brand: string): string {
     .replace(/\s+/g, " ") // Normalize whitespace
     .toLowerCase()
     .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) =>
+      UPPERCASE_BRAND_WORDS.has(word)
+        ? word.toUpperCase()
+        : word.charAt(0).toUpperCase() + word.slice(1)
+    )
     .join(" ");
 }

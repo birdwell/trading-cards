@@ -106,4 +106,24 @@ describe("Card Deletion Tests", () => {
       expect(statsAfter!.ownedCards).toBe(0);
     });
   });
+
+  describe("delete all cards in set", () => {
+    it("should delete every card in the set and leave the set", async () => {
+      const deleted = await tradingCards.cards.deleteBySetId(testSetId);
+      expect(deleted).toBe(2);
+
+      const remainingCards = await tradingCards.cards.findBySetId(testSetId);
+      expect(remainingCards).toHaveLength(0);
+
+      const setAfter = await tradingCards.sets.findById(testSetId);
+      expect(setAfter).toBeDefined();
+      expect(setAfter!.name).toBe("Test Delete Set");
+    });
+
+    it("should return 0 when the set has no cards", async () => {
+      await tradingCards.cards.deleteBySetId(testSetId);
+      const deleted = await tradingCards.cards.deleteBySetId(testSetId);
+      expect(deleted).toBe(0);
+    });
+  });
 });

@@ -33,12 +33,14 @@ This is a full-stack app: a Next.js client and a tRPC server run together in one
 
    Create those keys at [https://dashboard.clerk.com](https://dashboard.clerk.com). After adding `NEXT_PUBLIC_*` values, **redeploy** so Next.js can inline them at build time.
 
-9. Optional import support:
+9. Optional import support (card extraction runs through Vercel AI Gateway):
 
    ```
-   GOOGLE_GENERATIVE_AI_API_KEY=...
-   GEMINI_MODEL=gemini-2.5-flash
+   AI_KEY=...
+   GEMINI_MODEL=google/gemini-2.5-flash
    ```
+
+   `AI_KEY` is an AI Gateway API key from the Vercel dashboard. `GEMINI_MODEL` takes any Gateway model id; bare names like `gemini-2.5-flash` are treated as `google/...`.
 
 ### Step 2: How it starts
 - Railway runs `npm run build` (Next.js client + TypeScript check) and installs Playwright Chromium
@@ -87,7 +89,7 @@ NEXT_PUBLIC_BACKEND_PORT=3002
 ```
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
-GOOGLE_GENERATIVE_AI_API_KEY=
-GEMINI_MODEL=gemini-2.5-flash
+AI_KEY=
+GEMINI_MODEL=google/gemini-2.5-flash
 NEXT_PUBLIC_API_URL=
 ```

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SetWithStats } from "../types";
 import TradingCardSetGrid from "../features/tradingCardSet/TradingCardSetGrid";
+import { compareSeasons } from "@/lib/seasons";
 
 interface SportTabsProps {
   setsWithStats: SetWithStats[];
@@ -10,56 +11,66 @@ interface SportTabsProps {
 
 type SportTab = "Basketball" | "Football";
 
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 export default function SportTabs({ setsWithStats }: SportTabsProps) {
   const [activeTab, setActiveTab] = useState<SportTab>("Basketball");
   const [yearByTab, setYearByTab] = useState<Partial<Record<SportTab, string>>>(
     {}
   );
 
-  const basketballSets = useMemo(
-    () =>
-      setsWithStats.filter((s) => s.set.sport.toLowerCase() === "basketball"),
-    [setsWithStats]
-  );
-  const footballSets = useMemo(
-    () =>
-      setsWithStats.filter((s) => s.set.sport.toLowerCase() === "football"),
-    [setsWithStats]
-  );
+  const railRef = useRef<HTMLDivElement>(null);
+  const chipRefs = useRef(new Map<string, HTMLButtonElement>());
 
-  const availableYears = useMemo(() => {
-    const dedupe = (arr: SetWithStats[]) =>
-      [...new Set(arr.map((s) => s.set.year))].sort().reverse();
+  const setsBySport = useMemo(() => {
+    const ofSport = (sport: string) =>
+      setsWithStats.filter((s) => s.set.sport.toLowerCase() === sport);
     return {
-      Basketball: dedupe(basketballSets),
-      Football: dedupe(footballSets),
+      Basketball: ofSport("basketball"),
+      Football: ofSport("football"),
     };
-  }, [basketballSets, footballSets]);
+  }, [setsWithStats]);
 
-  const years = availableYears[activeTab];
+  const years = useMemo(
+    () =>
+      [...new Set(setsBySport[activeTab].map((s) => s.set.year))].sort((a, b) =>
+        compareSeasons(b, a)
+      ),
+    [setsBySport, activeTab]
+  );
+
+  const rememberedYear = yearByTab[activeTab];
   const selectedYear =
-    (yearByTab[activeTab] && years.includes(yearByTab[activeTab]!)
-      ? yearByTab[activeTab]
+    (rememberedYear && years.includes(rememberedYear)
+      ? rememberedYear
       : years[0]) ?? null;
 
-  const currentSetsAll =
-    activeTab === "Basketball" ? basketballSets : footballSets;
-  const currentSets = (
-    selectedYear
-      ? currentSetsAll.filter((s) => s.set.year === selectedYear)
-      : currentSetsAll
-  )
-    .slice()
+  const currentSets = setsBySport[activeTab]
+    .filter((s) => s.set.year === selectedYear)
     .sort((a, b) => a.set.name.localeCompare(b.set.name));
 
+  // Keep the selected season centered when the strip is wider than the screen.
+  useEffect(() => {
+    const rail = railRef.current;
+    const chip = selectedYear ? chipRefs.current.get(selectedYear) : undefined;
+    if (!rail || !chip || rail.scrollWidth <= rail.clientWidth) return;
+
+    rail.scrollTo({
+      left: chip.offsetLeft - (rail.clientWidth - chip.offsetWidth) / 2,
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
+    });
+  }, [selectedYear, activeTab]);
+
   const tabs: Array<{ id: SportTab; label: string; count: number }> = [
-    { id: "Basketball", label: "Basketball", count: basketballSets.length },
-    { id: "Football", label: "Football", count: footballSets.length },
+    { id: "Basketball", label: "Basketball", count: setsBySport.Basketball.length },
+    { id: "Football", label: "Football", count: setsBySport.Football.length },
   ];
 
   return (
     <div>
-      <div className="mb-6 flex flex-col items-center gap-3 fade-in">
+      <div className="mb-3 flex justify-center fade-in">
         <div className="segment" role="tablist" aria-label="Sport">
           {tabs.map(({ id, label, count }) => {
             const active = activeTab === id;
@@ -87,31 +98,43 @@ export default function SportTabs({ setsWithStats }: SportTabsProps) {
             );
           })}
         </div>
+      </div>
 
-        {years.length > 0 && (
+      {years.length > 0 && (
+        <div
+          ref={railRef}
+          className="relative -mx-5 mb-5 overflow-x-auto py-1 [mask-image:linear-gradient(to_right,transparent,#000_20px,#000_calc(100%-20px),transparent)] [scrollbar-width:none] md:-mx-8 [&::-webkit-scrollbar]:hidden"
+        >
           <div
-            className="flex flex-wrap items-center justify-center gap-1.5"
+            className="mx-auto flex w-max gap-1.5 px-5 md:px-8"
             role="tablist"
             aria-label="Season"
           >
-            {years.map((year) => (
-              <button
-                key={year}
-                type="button"
-                role="tab"
-                aria-selected={selectedYear === year}
-                onClick={() =>
-                  setYearByTab((prev) => ({ ...prev, [activeTab]: year }))
-                }
-                className="chip tabular-nums"
-                data-active={selectedYear === year}
-              >
-                {year}
-              </button>
-            ))}
+            {years.map((year) => {
+              const active = selectedYear === year;
+              return (
+                <button
+                  key={year}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  ref={(el) => {
+                    if (el) chipRefs.current.set(year, el);
+                    else chipRefs.current.delete(year);
+                  }}
+                  onClick={() =>
+                    setYearByTab((prev) => ({ ...prev, [activeTab]: year }))
+                  }
+                  className="chip shrink-0 tabular-nums"
+                  data-active={active}
+                >
+                  {year}
+                </button>
+              );
+            })}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {currentSets.length > 0 ? (
         <TradingCardSetGrid setsWithStats={currentSets} />

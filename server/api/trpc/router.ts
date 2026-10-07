@@ -272,6 +272,37 @@ export const appRouter = router({
       }
     }),
 
+  deleteAllCardsInSet: procedure
+    .input(z.object({ setId: z.number() }))
+    .mutation(async ({ input }) => {
+      try {
+        logger.info(`Deleting all cards in set ${input.setId}`);
+        const deleted = await tradingCards.cards.deleteBySetId(input.setId);
+        logger.info(
+          `Deleted ${deleted} card${deleted === 1 ? "" : "s"} from set ${input.setId}`
+        );
+        return {
+          success: true,
+          deleted,
+          message:
+            deleted === 0
+              ? "No cards to delete."
+              : `Deleted ${deleted} card${deleted === 1 ? "" : "s"}.`,
+        };
+      } catch (error) {
+        logger.error(
+          `Error deleting all cards in set: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
+        throw new Error(
+          `Failed to delete cards: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
+      }
+    }),
+
   duplicateBaseAsHolo: procedure
     .input(z.object({ setId: z.number() }))
     .mutation(async ({ input }) => {

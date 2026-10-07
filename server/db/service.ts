@@ -9,7 +9,10 @@ import {
   CardWithSet,
 } from "./types";
 import { getBrand, normalizeBrand } from "../utils/get-brand";
-import { baseCardTypeToHolo } from "../utils/base-card-type-to-holo";
+import {
+  baseCardTypeToHolo,
+  findMissingHoloCards,
+} from "../utils/base-card-type-to-holo";
 
 function withOwnedFlag<T extends { id: number }>(
   row: T,
@@ -265,6 +268,22 @@ class TradingCardService {
         );
       }
     },
+
+    async deleteBySetId(setId: number): Promise<number> {
+      try {
+        const deleted = await db
+          .delete(cards)
+          .where(eq(cards.setId, setId))
+          .returning({ id: cards.id });
+        return deleted.length;
+      } catch (error) {
+        throw new Error(
+          `Failed to delete cards for set: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
+      }
+    },
   };
 
   // Combined operations
@@ -370,8 +389,8 @@ class TradingCardService {
   }
 
   /**
-   * Copy Base (and Base-*) cards in a set to Holo / Holo-* counterparts.
-   * Skips cards that already have a matching holo (same number + player + type).
+   * Copy base-set cards (Base, Base - *, and base rookies) in a set to their
+   * Holo parallels. Skips cards that already have a matching holo.
    */
   async duplicateBaseAsHolo(setId: number) {
     const setInfo = await this.sets.findById(setId);
@@ -380,34 +399,13 @@ class TradingCardService {
     }
 
     const existing = await this.cards.findBySetId(setId);
-    const existingKeys = new Set(
-      existing.map(
-        (card) =>
-          `${card.cardNumber}|${card.playerName}|${card.cardType}`
-      )
+    const toCreate: CreateCardData[] = findMissingHoloCards(existing).map(
+      (holo) => ({ ...holo, setId })
     );
-
-    const toCreate: CreateCardData[] = [];
-    let skipped = 0;
-
-    for (const card of existing) {
-      const holoType = baseCardTypeToHolo(card.cardType);
-      if (!holoType) continue;
-
-      const key = `${card.cardNumber}|${card.playerName}|${holoType}`;
-      if (existingKeys.has(key)) {
-        skipped += 1;
-        continue;
-      }
-
-      toCreate.push({
-        cardNumber: card.cardNumber,
-        playerName: card.playerName,
-        cardType: holoType,
-        setId,
-      });
-      existingKeys.add(key);
-    }
+    const baseSetCount = existing.filter((card) =>
+      baseCardTypeToHolo(card.cardType)
+    ).length;
+    const skipped = baseSetCount - toCreate.length;
 
     const created = await this.cards.create(toCreate);
     return {

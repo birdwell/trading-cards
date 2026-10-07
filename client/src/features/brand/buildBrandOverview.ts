@@ -1,8 +1,10 @@
 import { getBrand, normalizeBrand } from "../../../../shared/get-brand";
 import type { SetWithStats } from "@/types";
+import { compareSeasons } from "@/lib/seasons";
 
 export type BrandOverviewItem = {
   brand: string;
+  /** Oldest season first. */
   sets: Array<{
     set: {
       id: number;
@@ -15,6 +17,8 @@ export type BrandOverviewItem = {
       ownedCards: number;
     };
   }>;
+  /** Distinct season labels, oldest first. */
+  seasons: string[];
   overallStats: {
     totalSets: number;
     totalCards: number;
@@ -59,18 +63,29 @@ export function buildBrandOverview(
   }
 
   return Array.from(brandMap.entries())
-    .map(([brand, data]) => ({
-      brand,
-      sets: data.sets,
-      overallStats: {
-        totalSets: data.sets.length,
-        totalCards: data.totalCards,
-        totalOwnedCards: data.totalOwnedCards,
-        completionPercentage:
-          data.totalCards > 0
-            ? Math.round((data.totalOwnedCards / data.totalCards) * 100)
-            : 0,
-      },
-    }))
+    .map(([brand, data]) => {
+      const sets = data.sets
+        .slice()
+        .sort(
+          (a, b) =>
+            compareSeasons(a.set.year, b.set.year) ||
+            a.set.name.localeCompare(b.set.name)
+        );
+
+      return {
+        brand,
+        sets,
+        seasons: [...new Set(sets.map(({ set }) => set.year))],
+        overallStats: {
+          totalSets: sets.length,
+          totalCards: data.totalCards,
+          totalOwnedCards: data.totalOwnedCards,
+          completionPercentage:
+            data.totalCards > 0
+              ? Math.round((data.totalOwnedCards / data.totalCards) * 100)
+              : 0,
+        },
+      };
+    })
     .sort((a, b) => a.brand.localeCompare(b.brand));
 }

@@ -93,3 +93,4 @@ Thumbs.db
 
 # Jest
 jest-coverage/
+client/.next-audit/

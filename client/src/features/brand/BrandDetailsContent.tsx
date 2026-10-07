@@ -1,4 +1,3 @@
-import { useRouter } from "next/navigation";
 import { BrandHeader, BrandTabs, BrandSportTab } from "./components";
 
 interface BrandDetailsProps {
@@ -41,8 +40,6 @@ interface BrandDetailsProps {
 }
 
 export default function BrandDetailsContent({ brandData }: BrandDetailsProps) {
-  const router = useRouter();
-
   const transformDataBySport = (sport: "basketball" | "football") => {
     return brandData.yearGroups
       .map((yearGroup) => ({
@@ -68,27 +65,20 @@ export default function BrandDetailsContent({ brandData }: BrandDetailsProps) {
         overallStats={brandData.overallStats}
       />
 
-      <section className="pt-12 md:pt-16">
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold tracking-tight">Sets</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Filter by sport.
-          </p>
-        </div>
-
+      <section className="pt-4">
         <BrandTabs
           basketballCount={basketballCount}
           footballCount={footballCount}
         >
           <BrandSportTab
             sport="basketball"
+            brand={brandData.brand}
             yearGroups={basketballData}
-            onSetClick={(setId) => router.push(`/set/${setId}`)}
           />
           <BrandSportTab
             sport="football"
+            brand={brandData.brand}
             yearGroups={footballData}
-            onSetClick={(setId) => router.push(`/set/${setId}`)}
           />
         </BrandTabs>
       </section>

@@ -192,7 +192,7 @@ DATABASE_URL=postgresql://postgres:password@host:port/railway
 LOG_LEVEL=info
 ```
 
-See `.env.example` and `DEPLOYMENT.md` for Clerk, Gemini, and Railway settings.
+See `.env.example` and `DEPLOYMENT.md` for Clerk, AI Gateway, and Railway settings.
 
 ### TypeScript Configuration
 

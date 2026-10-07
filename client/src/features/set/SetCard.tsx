@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 interface SetCardProps {
   card: Card;
   onOwnershipChange?: () => void;
+  /** Overrides the card type shown on the row; empty hides it. */
+  typeLabel?: string;
 }
 
 type SetWithCardsData = {
@@ -19,9 +21,11 @@ type SetWithCardsData = {
 function SetCardRow({
   card,
   onClick,
+  typeLabel = card.cardType,
 }: {
   card: Card;
   onClick: () => void;
+  typeLabel?: string;
 }) {
   return (
     <button
@@ -54,9 +58,11 @@ function SetCardRow({
         {card.playerName}
       </span>
 
-      <span className="max-w-[40%] shrink-0 truncate text-xs text-muted-foreground">
-        {card.cardType}
-      </span>
+      {typeLabel && (
+        <span className="max-w-[40%] shrink-0 truncate text-xs text-muted-foreground">
+          {typeLabel}
+        </span>
+      )}
     </button>
   );
 }
@@ -129,7 +135,7 @@ function useOwnershipMutation(
   );
 }
 
-function ClerkSetCard({ card, onOwnershipChange }: SetCardProps) {
+function ClerkSetCard({ card, onOwnershipChange, typeLabel }: SetCardProps) {
   const { isSignedIn } = useAuth();
   const { openSignIn } = useClerk();
   const updateOwnershipMutation = useOwnershipMutation(card, onOwnershipChange);
@@ -146,11 +152,19 @@ function ClerkSetCard({ card, onOwnershipChange }: SetCardProps) {
     });
   };
 
-  return <SetCardRow card={card} onClick={handleToggleOwnership} />;
+  return (
+    <SetCardRow
+      card={card}
+      onClick={handleToggleOwnership}
+      typeLabel={typeLabel}
+    />
+  );
 }
 
-function GuestSetCard({ card }: SetCardProps) {
-  return <SetCardRow card={card} onClick={() => undefined} />;
+function GuestSetCard({ card, typeLabel }: SetCardProps) {
+  return (
+    <SetCardRow card={card} onClick={() => undefined} typeLabel={typeLabel} />
+  );
 }
 
 export default function SetCard(props: SetCardProps) {

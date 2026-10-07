@@ -30,7 +30,7 @@ export default function BrandDetailsPage() {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <div className="mx-auto max-w-6xl px-6 py-16 md:px-8">
+        <div className="mx-auto max-w-2xl px-5 py-6 md:max-w-3xl md:px-8">
           <p className="text-base font-medium text-destructive">
             Invalid brand name
           </p>
@@ -42,7 +42,7 @@ export default function BrandDetailsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="mx-auto max-w-6xl px-6 py-12 md:px-8 md:py-16">
+      <div className="mx-auto max-w-2xl px-5 py-6 pb-20 md:max-w-3xl md:px-8">
         <DataStateWrapper
           isLoading={isLoading}
           error={

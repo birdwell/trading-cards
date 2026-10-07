@@ -1,5 +1,8 @@
 import { downloadFile } from "../services/download-file";
-import { getXlsxLink } from "../services/get-xlsx-link";
+import {
+  getChecklistSource,
+  saveInlineChecklist,
+} from "../services/get-checklist-source";
 import {
   extractCardsWithLlm,
   readSpreadsheetAsCsv,
@@ -24,28 +27,58 @@ export async function* importCardsFromUrl(
   logger.info(`Detected sport: ${sport}`);
 
   yield { type: "progress", stage: "finding_checklist" };
-  const xlsxLink = await getXlsxLink(url);
+  const checklist = await getChecklistSource(url);
 
-  if (!xlsxLink) {
-    logger.fatal("Could not find XLSX link in the provided URL");
+  if (!checklist) {
+    logger.fatal(
+      "Could not find an XLSX link or inline checklist in the provided URL"
+    );
     return;
   }
 
   yield { type: "progress", stage: "downloading" };
-  const filePath = await downloadFile(xlsxLink);
 
-  yield { type: "progress", stage: "checking_existing" };
-  const existing = await findExistingSetByFilePath(filePath);
-  if (existing) {
-    yield toImportCompleteEvent(existing);
-    return;
+  let filePath: string;
+  let checklistData: string;
+
+  switch (checklist.kind) {
+    case "xlsx": {
+      filePath = await downloadFile(checklist.url);
+      yield { type: "progress", stage: "checking_existing" };
+      const existing = await findExistingSetByFilePath(filePath);
+      if (existing) {
+        yield toImportCompleteEvent(existing);
+        return;
+      }
+
+      yield { type: "progress", stage: "parsing" };
+      checklistData = await readSpreadsheetAsCsv(filePath);
+      break;
+    }
+    case "inline": {
+      filePath = await saveInlineChecklist(
+        checklist.text,
+        checklist.sourceFileName
+      );
+      yield { type: "progress", stage: "checking_existing" };
+      const existing = await findExistingSetByFilePath(filePath);
+      if (existing) {
+        yield toImportCompleteEvent(existing);
+        return;
+      }
+
+      yield { type: "progress", stage: "parsing" };
+      checklistData = checklist.text;
+      break;
+    }
+    default: {
+      const _exhaustive: never = checklist;
+      return _exhaustive;
+    }
   }
 
-  yield { type: "progress", stage: "parsing" };
-  const csvData = await readSpreadsheetAsCsv(filePath);
-
   yield { type: "progress", stage: "extracting" };
-  const cards = await extractCardsWithLlm(csvData, sport);
+  const cards = await extractCardsWithLlm(checklistData, sport);
 
   if (cards.length === 0) {
     logger.warn("No cards found for the specified sport.");

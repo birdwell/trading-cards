@@ -45,33 +45,40 @@ export default function BrandTabs({
     { id: "basketball", label: "Basketball", count: basketballCount },
     { id: "football", label: "Football", count: footballCount },
   ];
+  // A brand with one sport needs no switcher.
+  const showTabs = tabs.every(({ count }) => count > 0);
 
   return (
     <div>
-      <div className="mb-8 inline-flex rounded-lg border border-border p-1">
-        {tabs.map(({ id, label, count }) => {
-          const active = activeTab === id;
-          return (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setActiveTab(id)}
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                active
-                  ? "bg-foreground text-background"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <span className="flex items-center gap-2">
-                <span>{label}</span>
-                <span className={active ? "text-background/70" : "text-muted-foreground"}>
-                  {count}
+      {showTabs && (
+        <div className="segment mb-4" role="tablist" aria-label="Sport">
+          {tabs.map(({ id, label, count }) => {
+            const active = activeTab === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setActiveTab(id)}
+                className="segment-item"
+                data-active={active}
+              >
+                <span className="flex items-center gap-2">
+                  <span>{label}</span>
+                  <span
+                    className={`tabular-nums text-xs ${
+                      active ? "text-foreground/55" : "text-muted-foreground/80"
+                    }`}
+                  >
+                    {count}
+                  </span>
                 </span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {React.Children.map(children, (child) => {
         if (

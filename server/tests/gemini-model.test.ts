@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { createGateway } from "ai";
 import {
   createGeminiModel,
   DEFAULT_GEMINI_MODEL,
@@ -6,61 +6,82 @@ import {
   isGeminiModelUnavailableError,
 } from "../core/gemini-model";
 
-jest.mock("@ai-sdk/google", () => ({
-  google: jest.fn((modelName: string) => ({ modelName })),
+const mockedGatewayModel = jest.fn((modelName: string) => ({ modelName }));
+
+jest.mock("ai", () => ({
+  createGateway: jest.fn(() => mockedGatewayModel),
 }));
 
-const mockedGoogle = google as unknown as jest.Mock;
+const mockedCreateGateway = createGateway as unknown as jest.Mock;
 const originalGeminiModel = process.env.GEMINI_MODEL;
+const originalAiKey = process.env.AI_KEY;
+
+function restoreEnv(name: string, value: string | undefined) {
+  if (value === undefined) {
+    delete process.env[name];
+  } else {
+    process.env[name] = value;
+  }
+}
 
 describe("gemini model configuration", () => {
   afterEach(() => {
-    mockedGoogle.mockClear();
-
-    if (originalGeminiModel === undefined) {
-      delete process.env.GEMINI_MODEL;
-    } else {
-      process.env.GEMINI_MODEL = originalGeminiModel;
-    }
+    mockedCreateGateway.mockClear();
+    mockedGatewayModel.mockClear();
+    restoreEnv("GEMINI_MODEL", originalGeminiModel);
+    restoreEnv("AI_KEY", originalAiKey);
   });
 
-  it("defaults to the supported Gemini Flash model", () => {
+  it("defaults to Gemini Flash through AI Gateway", () => {
     delete process.env.GEMINI_MODEL;
 
     expect(getGeminiModelName()).toBe(DEFAULT_GEMINI_MODEL);
 
     createGeminiModel();
 
-    expect(mockedGoogle).toHaveBeenCalledWith("gemini-2.5-flash");
+    expect(mockedGatewayModel).toHaveBeenCalledWith("google/gemini-2.5-flash");
   });
 
-  it("uses a configured model name when provided", () => {
+  it("prefixes bare Gemini model names with the google provider", () => {
     process.env.GEMINI_MODEL = " gemini-2.5-flash-lite ";
 
-    expect(getGeminiModelName()).toBe("gemini-2.5-flash-lite");
+    expect(getGeminiModelName()).toBe("google/gemini-2.5-flash-lite");
+  });
+
+  it("passes gateway model ids through unchanged", () => {
+    process.env.GEMINI_MODEL = "google/gemini-3-flash";
 
     createGeminiModel();
 
-    expect(mockedGoogle).toHaveBeenCalledWith("gemini-2.5-flash-lite");
+    expect(mockedGatewayModel).toHaveBeenCalledWith("google/gemini-3-flash");
   });
 
-  it("detects retired or unsupported Gemini model errors", () => {
-    expect(
-      isGeminiModelUnavailableError(
-        new Error(
-          "models/gemini-1.5-flash-latest is not found for API version v1beta"
-        )
-      )
-    ).toBe(true);
+  it("authenticates with AI_KEY", () => {
+    process.env.AI_KEY = " gateway-key ";
 
-    expect(
-      isGeminiModelUnavailableError(
-        new Error("model is not supported for generateContent")
-      )
-    ).toBe(true);
+    createGeminiModel();
 
+    expect(mockedCreateGateway).toHaveBeenCalledWith({
+      apiKey: "gateway-key",
+    });
+  });
+
+  it("lets the gateway use its default auth when AI_KEY is unset", () => {
+    delete process.env.AI_KEY;
+
+    createGeminiModel();
+
+    expect(mockedCreateGateway).toHaveBeenCalledWith({ apiKey: undefined });
+  });
+
+  it("detects gateway model-not-found errors", () => {
+    const notFound = new Error("Model not found");
+    notFound.name = "GatewayModelNotFoundError";
+
+    expect(isGeminiModelUnavailableError(notFound)).toBe(true);
     expect(isGeminiModelUnavailableError(new Error("network timeout"))).toBe(
       false
     );
+    expect(isGeminiModelUnavailableError("Model not found")).toBe(false);
   });
 });

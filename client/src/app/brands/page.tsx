@@ -4,7 +4,10 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/utils/trpc";
 import DataStateWrapper from "@/components/DataStateWrapper";
-import BrandOverviewGrid from "@/features/brand/BrandOverviewGrid";
+import BrandOverviewGrid, {
+  BrandOverviewEmpty,
+  BrandOverviewSkeleton,
+} from "@/features/brand/BrandOverviewGrid";
 import { buildBrandOverview } from "@/features/brand/buildBrandOverview";
 import Navigation from "@/components/Navigation";
 
@@ -23,28 +26,17 @@ export default function BrandsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="mx-auto max-w-6xl px-6 md:px-8">
-        <main>
-          <section className="py-8 md:py-10">
-            <div className="max-w-2xl">
-              <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-                Brands
-              </h1>
-              <p className="mt-3 text-base leading-7 text-muted-foreground">
-                View collection progress by manufacturer.
-              </p>
-            </div>
-          </section>
-
-          <section className="pb-16">
-            <DataStateWrapper
-              isLoading={isLoading}
-              error={error?.message}
-              data={brands}
-            >
-              {brands && <BrandOverviewGrid brands={brands} />}
-            </DataStateWrapper>
-          </section>
+      <div className="mx-auto max-w-2xl px-5 md:max-w-3xl md:px-8">
+        <main className="py-6 pb-20">
+          <DataStateWrapper
+            isLoading={isLoading}
+            error={error?.message}
+            data={brands}
+            loadingComponent={<BrandOverviewSkeleton />}
+            emptyComponent={<BrandOverviewEmpty />}
+          >
+            {brands && <BrandOverviewGrid brands={brands} />}
+          </DataStateWrapper>
         </main>
       </div>
     </div>

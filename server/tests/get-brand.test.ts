@@ -47,4 +47,12 @@ describe("normalizeBrand", () => {
     expect(normalizeBrand("topps")).toBe("Topps");
     expect(normalizeBrand("DONRUSS")).toBe("Donruss");
   });
+
+  test("should keep league and line abbreviations uppercase", () => {
+    expect(normalizeBrand("Panini NBA Hoops")).toBe("Panini NBA Hoops");
+    expect(normalizeBrand("panini nba hoops")).toBe("Panini NBA Hoops");
+    expect(normalizeBrand("upper deck sp authentic")).toBe(
+      "Upper Deck SP Authentic"
+    );
+  });
 });

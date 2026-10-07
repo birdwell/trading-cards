@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "outDir": "./dist"
   },
-  "include": ["server/**/*", "examples/**/*", "shared/**/*"]
+  "include": ["server/**/*", "shared/**/*"]
 }
