@@ -17,7 +17,7 @@ if (process.env.DATABASE_URL.startsWith("file:")) {
 
 console.log("Pushing database schema to Postgres...");
 try {
-  execSync("pnpm exec drizzle-kit push", { stdio: "inherit" });
+  execSync("bunx drizzle-kit push", { stdio: "inherit" });
   console.log("Database schema sync completed successfully!");
 } catch (error) {
   console.error(

@@ -68,14 +68,14 @@ cd trading-cards
 2. Install dependencies:
 
 ```bash
-npm install
+bun install
 ```
 
 3. Set up the database:
 
 ```bash
-npm run db:generate
-npm run db:migrate
+bun run db:generate
+bun run db:migrate
 ```
 
 ## Usage
@@ -85,7 +85,7 @@ npm run db:migrate
 Run the application to import cards from a URL:
 
 ```bash
-npm start
+bun run start
 ```
 
 The default configuration imports from a Panini Prizm Football URL. You can modify the URL in `src/index.ts`.
@@ -95,7 +95,7 @@ The default configuration imports from a Panini Prizm Football URL. You can modi
 Run in development mode with hot reloading:
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 ### Import Cards Programmatically
@@ -139,12 +139,12 @@ const newSet = await dbService.createSet({
 
 ## Scripts
 
-- `npm start` - Run the application
-- `npm run dev` - Run in development mode
-- `npm run build` - Build TypeScript to JavaScript
-- `npm test` - Run the test suite
-- `npm run db:generate` - Generate database migrations
-- `npm run db:migrate` - Apply database migrations
+- `bun run start` - Run the application
+- `bun run dev` - Run in development mode
+- `bun run build` - Build TypeScript to JavaScript
+- `bun run test` - Run the test suite
+- `bun run db:generate` - Generate database migrations
+- `bun run db:migrate` - Apply database migrations
 
 ## Testing
 
@@ -152,13 +152,13 @@ The project includes comprehensive tests for all major components:
 
 ```bash
 # Run all tests
-npm test
+bun run test
 
 # Run specific test file
-npm test -- get-set-name.test.ts
+bun run test get-set-name.test.ts
 
 # Run tests in watch mode
-npm test -- --watch
+bun run test --watch
 ```
 
 ## Dependencies
@@ -203,7 +203,7 @@ The project uses modern TypeScript with ES modules. See `tsconfig.json` for full
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
 3. Make your changes and add tests
-4. Run the test suite: `npm test`
+4. Run the test suite: `bun run test`
 5. Commit your changes: `git commit -am 'Add feature'`
 6. Push to the branch: `git push origin feature-name`
 7. Submit a pull request
@@ -219,7 +219,7 @@ This project is licensed under the MIT License.
 **Database connection errors:**
 
 - Ensure `DATABASE_URL` is a Postgres URL, not `file:./database.db`
-- Run `npm run db:setup` to sync the schema
+- Run `bun run db:setup` to sync the schema
 
 **Excel parsing errors:**
 

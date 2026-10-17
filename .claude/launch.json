@@ -4,7 +4,7 @@
     {
       "name": "trading-cards-dev",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "PORT=3001 pnpm run dev"],
+      "runtimeArgs": ["-c", "PORT=3001 bun run dev"],
       "port": 3001
     }
   ]

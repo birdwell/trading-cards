@@ -43,8 +43,8 @@ This is a full-stack app: a Next.js client and a tRPC server run together in one
    `AI_KEY` is an AI Gateway API key from the Vercel dashboard. `GEMINI_MODEL` takes any Gateway model id; bare names like `gemini-2.5-flash` are treated as `google/...`.
 
 ### Step 2: How it starts
-- Railway runs `npm run build` (Next.js client + TypeScript check) and installs Playwright Chromium
-- Railway runs `npm start`, which:
+- Railway runs `bun run build` (Next.js client + TypeScript check) and installs Playwright Chromium
+- Railway runs `bun run start`, which:
   1. Syncs the Postgres schema (`drizzle-kit push`)
   2. Starts the tRPC server on port 3002
   3. Starts Next.js on Railway's `PORT`
@@ -55,20 +55,20 @@ The homepage still renders if Clerk keys are missing or the first tRPC preload f
 ### Step 3: What Josh needs to check in Railway if the site 500s
 1. **Postgres is attached** and `DATABASE_URL` is the Postgres URL from that plugin (not a leftover SQLite `file:` value).
 2. **Redeploy** after changing env vars, especially `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`.
-3. Confirm the start command is `npm start` / `npm run start` (see `Procfile` and `package.json`).
+3. Confirm the start command is `bun run start` / `bun run start` (see `Procfile` and `package.json`).
 4. Clerk keys are optional for browsing. They are required for Sign in and marking cards owned.
 
 ## Alternative: Render Deployment
 
 ### Step 1: Create Render Services
 1. **Backend Service**:
-   - Build Command: `npm run build`
-   - Start Command: `npm run server`
+   - Build Command: `bun run build`
+   - Start Command: `bun run server`
    - Environment: Node.js
 
 2. **Frontend Service**:
-   - Build Command: `cd client && npm run build`
-   - Start Command: `cd client && npm run start`
+   - Build Command: `cd client && bun run build`
+   - Start Command: `cd client && bun run start`
    - Environment: Node.js
 
 ### Step 2: Database
