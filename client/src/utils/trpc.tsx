@@ -50,7 +50,7 @@ function getUrl() {
 
   if (typeof window !== "undefined") {
     // next dev talks to the tRPC server directly. Production (including a
-    // local `next start`) uses the same-origin /trpc proxy, matching Railway.
+    // local `next start`) uses the same-origin /trpc proxy, matching the deployed app.
     if (
       process.env.NODE_ENV !== "production" &&
       window.location.hostname === "localhost"

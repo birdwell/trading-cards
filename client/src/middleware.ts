@@ -9,7 +9,7 @@ export default function middleware(
   event: NextFetchEvent
 ) {
   // Production Clerk throws on every request when keys are missing.
-  // Keep pages available anonymously until Railway has Clerk configured.
+  // Keep pages available anonymously until Clerk keys are configured.
   if (!isClerkConfigured()) {
     return NextResponse.next();
   }

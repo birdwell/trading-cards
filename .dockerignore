@@ -1,0 +1,14 @@
+.git
+**/node_modules
+client/.next
+client/.next-audit
+.env
+.env.*
+!.env.example
+*.log
+coverage
+jest-coverage
+.claude
+.windsurf
+# Legacy SQLite file, only read by the one-off scripts/migrate-sqlite-to-postgres.ts
+database.db

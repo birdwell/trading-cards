@@ -1,5 +1,5 @@
 /**
- * One-time helper: copy catalog data from local SQLite into Railway Postgres.
+ * One-time helper: copy catalog data from local SQLite into Postgres.
  * Ownership is not migrated (it becomes per-user via Clerk).
  *
  * Usage: pnpm exec tsx scripts/migrate-sqlite-to-postgres.ts

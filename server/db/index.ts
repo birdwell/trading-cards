@@ -11,7 +11,7 @@ if (!databaseUrl) {
 
 if (databaseUrl.startsWith("file:")) {
   throw new Error(
-    "DATABASE_URL still points at SQLite. Set it to your Railway Postgres URL."
+    "DATABASE_URL still points at SQLite. Set it to your Postgres URL."
   );
 }
 

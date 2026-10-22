@@ -1,0 +1,54 @@
+# Render Blueprint for trading-cards. Runbook: DEPLOYMENT.md
+#
+# One Docker web service runs both processes, like the Railway service did:
+#   - Next.js on $PORT (Render's public port, default 10000)
+#   - tRPC server on BACKEND_PORT=3002, container-internal only
+# Browsers call /trpc on the same origin and Next.js proxies to localhost:3002,
+# so nothing besides $PORT needs to be public.
+services:
+  - type: web
+    name: trading-cards
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    # Measured locally with this Dockerfile: ~710 MB idle (Next.js, tRPC server
+    # under tsx, pnpm/concurrently wrappers) and ~950 MB while Chromium renders
+    # a page during an import. 0.5c-512mb would OOM at boot.
+    plan: 1c-2g
+    region: virginia
+    numInstances: 1
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+    domains:
+      - cards.birdwell.ai
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BACKEND_PORT
+        value: "3002"
+      - key: NEXT_PUBLIC_BACKEND_PORT
+        value: "3002"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: trading-cards-db
+          property: connectionString
+      # Vercel AI Gateway key for card extraction on import. Mint a NEW key;
+      # do not reuse anything that was stored in Railway.
+      - key: AI_KEY
+        sync: false
+
+databases:
+  - name: trading-cards-db
+    plan: 0.1c-256mb
+    region: virginia
+    postgresMajorVersion: "18"
+    databaseName: trading_cards
+    user: trading_cards
+    # Railway volume was ~215 MB. Size can grow later but never shrink.
+    diskSizeGB: 5
+    # Railway's DB was reachable through a public TCP proxy and the runbook
+    # restores from a laptop, so keep external access (password + TLS).
+    # Switch to [] after cutover if you don't need local access.
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere

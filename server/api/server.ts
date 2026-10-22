@@ -20,6 +20,14 @@ const server = createHTTPServer({
   router: appRouter,
   createContext,
   middleware: (req, res, next) => {
+    // Liveness probe for the Next.js /healthz route (Render health check).
+    // Answered before logging so it doesn't flood the logs every few seconds.
+    if (req.url === '/healthz') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end('ok');
+      return;
+    }
+
     // Log incoming requests with more detail
     logger.info({
       method: req.method,
@@ -45,7 +53,8 @@ const server = createHTTPServer({
   },
 });
 
-// Use BACKEND_PORT environment variable, fallback to Railway's PORT, then 3002 for local development
+// Use BACKEND_PORT, then PORT, then 3002 for local development.
+// In production `pnpm start` pins BACKEND_PORT=3002; the platform's PORT belongs to Next.js.
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 3002;
 const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
 

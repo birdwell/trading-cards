@@ -2,7 +2,7 @@
 
 A TypeScript application that automatically imports and manages trading card data from beckett.com. The application scrapes trading card checklists from URLs, downloads Excel files, and stores the card information in Postgres via Drizzle ORM.
 
-**Live app:** [https://sportscards.up.railway.app](https://sportscards.up.railway.app)
+**Live app:** [https://cards.birdwell.ai](https://cards.birdwell.ai) (hosted on Render; see `DEPLOYMENT.md`)
 
 ## Features
 
@@ -186,13 +186,13 @@ Create a `.env` file in the root directory:
 
 ```env
 # Database configuration (Postgres)
-DATABASE_URL=postgresql://postgres:password@host:port/railway
+DATABASE_URL=postgresql://user:password@host:5432/trading_cards
 
 # Logging level
 LOG_LEVEL=info
 ```
 
-See `.env.example` and `DEPLOYMENT.md` for Clerk, AI Gateway, and Railway settings.
+See `.env.example` and `DEPLOYMENT.md` for Clerk, AI Gateway, and Render settings.
 
 ### TypeScript Configuration
 

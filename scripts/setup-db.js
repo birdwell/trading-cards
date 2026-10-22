@@ -10,7 +10,7 @@ if (!process.env.DATABASE_URL) {
 
 if (process.env.DATABASE_URL.startsWith("file:")) {
   console.error(
-    "DATABASE_URL still points at SQLite. Set it to your Railway Postgres URL."
+    "DATABASE_URL still points at SQLite. Set it to your Postgres URL."
   );
   process.exit(1);
 }
