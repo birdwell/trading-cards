@@ -1,0 +1,24 @@
+# Standard Dependabot config: one weekly grouped PR across every ecosystem
+# (majors included), plus grouped security-update PRs per ecosystem.
+version: 2
+
+multi-ecosystem-groups:
+  weekly-deps:
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: America/Chicago
+    labels: [dependencies]
+    commit-message:
+      prefix: "chore(deps)"
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    patterns: ["*"]
+    multi-ecosystem-group: weekly-deps
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
