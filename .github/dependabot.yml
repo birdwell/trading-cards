@@ -18,6 +18,25 @@ updates:
     directory: "/"
     patterns: ["*"]
     multi-ecosystem-group: weekly-deps
+    ignore:
+      # TypeScript 7 is a compiler major; the app and ts-jest stay on the 5.x line.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # Next.js 16 is an app-router major; the client stays on the 15.x line.
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      # Tailwind CSS 4 rewrites PostCSS and tailwind.config.js; the client stays on v3.
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+      # Paired Tailwind v4 packages stay off the v3 PostCSS and config toolchain.
+      - dependency-name: "@tailwindcss/*"
+        update-types: ["version-update:semver-major"]
+      # AI SDK 7 changes generateObject and the gateway client; the server stays on v5.
+      - dependency-name: "ai"
+        update-types: ["version-update:semver-major"]
+      # Paired AI SDK packages stay on the majors that ship with AI SDK 5.
+      - dependency-name: "@ai-sdk/*"
+        update-types: ["version-update:semver-major"]
     groups:
       security:
         applies-to: security-updates
