@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.25.0",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "start": "node scripts/setup-db.js && concurrently \"BACKEND_PORT=3002 pnpm run server\" \"PORT=${PORT:-3000} pnpm run client:start\"",
     "dev": "concurrently \"pnpm run server:dev\" \"pnpm run client:dev\"",
@@ -22,7 +25,7 @@
     "@trpc/client": "11.19.0",
     "@trpc/server": "11.19.0",
     "@types/axios": "^0.9.36",
-    "@types/node": "^26.6.5",
+    "@types/node": "^22",
     "ai": "^5.0.282",
     "axios": "^1.20.0",
     "concurrently": "^10.0.6",

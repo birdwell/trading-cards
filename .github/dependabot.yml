@@ -22,6 +22,9 @@ updates:
       # TypeScript 7 is a compiler major; the app and ts-jest stay on the 5.x line.
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
+      # @types/node stays on 22 to match engines.node; later majors are ignored.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
       # Next.js 16 is an app-router major; the client stays on the 15.x line.
       - dependency-name: "next"
         update-types: ["version-update:semver-major"]
