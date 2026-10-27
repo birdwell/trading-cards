@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.25.0",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "start": "node scripts/setup-db.js && concurrently \"BACKEND_PORT=3002 pnpm run server\" \"PORT=${PORT:-3000} pnpm run client:start\"",
     "dev": "concurrently \"pnpm run server:dev\" \"pnpm run client:dev\"",
@@ -18,33 +21,33 @@
     "db:migrate-sqlite": "tsx scripts/migrate-sqlite-to-postgres.ts"
   },
   "dependencies": {
-    "@clerk/backend": "^3.11.7",
-    "@trpc/client": "11.7.2",
-    "@trpc/server": "11.7.2",
+    "@clerk/backend": "^3.26.1",
+    "@trpc/client": "11.19.0",
+    "@trpc/server": "11.19.0",
     "@types/axios": "^0.9.36",
-    "@types/node": "^24.3.1",
-    "ai": "^5.0.34",
-    "axios": "^1.11.0",
-    "concurrently": "^9.1.0",
-    "dotenv": "^17.4.2",
-    "drizzle-orm": "^0.44.5",
+    "@types/node": "^22",
+    "ai": "^5.0.282",
+    "axios": "^1.20.0",
+    "concurrently": "^10.0.6",
+    "dotenv": "^18.0.9",
+    "drizzle-orm": "^0.45.4",
     "exceljs": "^4.4.0",
-    "pg": "^8.22.0",
-    "pino": "^9.9.4",
-    "pino-pretty": "^13.1.1",
-    "playwright": "^1.55.0",
+    "pg": "^8.23.1",
+    "pino": "^10.4.0",
+    "pino-pretty": "^13.2.0",
+    "playwright": "^1.64.1",
     "ts-node": "^10.9.2",
-    "tsx": "4.21.0",
+    "tsx": "4.23.15",
     "typescript": "^5.9.2",
-    "zod": "^4.1.5"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@libsql/client": "^0.17.4",
+    "@libsql/client": "^0.18.0",
     "@types/jest": "^30.0.0",
-    "@types/pg": "^8.20.0",
-    "drizzle-kit": "0.31.8",
-    "jest": "30.2.0",
-    "ts-jest": "29.4.6"
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "0.31.11",
+    "jest": "30.5.2",
+    "ts-jest": "29.4.15"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
