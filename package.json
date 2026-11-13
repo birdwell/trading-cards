@@ -17,6 +17,7 @@
     "build": "concurrently --kill-others-on-fail -n client,server -c auto \"pnpm run client:build\" \"pnpm run typecheck\"",
     "typecheck": "tsc --noEmit",
     "test": "jest",
+    "test:e2e": "playwright test",
     "db:setup": "node scripts/setup-db.js",
     "db:migrate-sqlite": "tsx scripts/migrate-sqlite-to-postgres.ts"
   },
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@libsql/client": "^0.18.0",
+    "@playwright/test": "1.65.0",
     "@types/jest": "^30.0.0",
     "@types/pg": "^8.23.1",
     "drizzle-kit": "0.31.11",

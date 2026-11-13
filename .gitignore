@@ -94,3 +94,8 @@ Thumbs.db
 # Jest
 jest-coverage/
 client/.next-audit/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
