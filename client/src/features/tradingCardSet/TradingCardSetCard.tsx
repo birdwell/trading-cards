@@ -31,7 +31,7 @@ export default function TradingCardSetCard({
       <button
         type="button"
         onClick={() => router.push(`/set/${set.id}`)}
-        className="group flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-white/[0.03] sm:gap-4 sm:px-5"
+        className="group flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-white/3 sm:gap-4 sm:px-5"
       >
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-3">

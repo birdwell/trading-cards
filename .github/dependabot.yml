@@ -32,10 +32,10 @@ updates:
       # Next.js stays on 16. The next app-router major is ignored.
       - dependency-name: "next"
         update-types: ["version-update:semver-major"]
-      # Tailwind CSS 4 rewrites PostCSS and tailwind.config.js; the client stays on v3.
+      # Tailwind CSS stays on v4. The next major is ignored.
       - dependency-name: "tailwindcss"
         update-types: ["version-update:semver-major"]
-      # Paired Tailwind v4 packages stay off the v3 PostCSS and config toolchain.
+      # Paired Tailwind packages stay on the v4 major.
       - dependency-name: "@tailwindcss/*"
         update-types: ["version-update:semver-major"]
       # AI SDK stays on 7. The next major is ignored until a dedicated migration.

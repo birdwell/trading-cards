@@ -103,7 +103,7 @@ export default function SportTabs({ setsWithStats }: SportTabsProps) {
       {years.length > 0 && (
         <div
           ref={railRef}
-          className="relative -mx-5 mb-5 overflow-x-auto py-1 [mask-image:linear-gradient(to_right,transparent,#000_20px,#000_calc(100%-20px),transparent)] [scrollbar-width:none] md:-mx-8 [&::-webkit-scrollbar]:hidden"
+          className="relative -mx-5 mb-5 overflow-x-auto py-1 mask-[linear-gradient(to_right,transparent,#000_20px,#000_calc(100%-20px),transparent)] scrollbar-none md:-mx-8 [&::-webkit-scrollbar]:hidden"
         >
           <div
             className="mx-auto flex w-max gap-1.5 px-5 md:px-8"

@@ -34,8 +34,8 @@ function SetCardRow({
       title={card.isOwned ? "Mark as not owned" : "Mark as owned"}
       className={cn(
         "group flex w-full items-center gap-3 border-b border-border/70 px-3 py-2 text-left transition-colors last:border-b-0",
-        "hover:bg-white/[0.03]",
-        card.isOwned && "bg-foil/[0.04]"
+        "hover:bg-white/3",
+        card.isOwned && "bg-foil/4"
       )}
     >
       <span
