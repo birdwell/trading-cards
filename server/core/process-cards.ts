@@ -1,6 +1,6 @@
 import "dotenv/config";
 import ExcelJS from "exceljs";
-import { generateObject } from "ai";
+import { generateText, Output } from "ai";
 import { z } from "zod";
 import logger from "../shared/logger";
 import { Sport } from "../shared/types";
@@ -17,8 +17,6 @@ const cardSchema = z.object({
   playerName: z.string(),
   cardType: z.string(),
 });
-
-const cardsSchema = z.array(cardSchema);
 
 export async function readSpreadsheetAsCsv(filePath: string): Promise<string> {
   const workbook = new ExcelJS.Workbook();
@@ -60,11 +58,11 @@ export async function extractCardsWithLlm(
     Output a JSON array of objects with keys: cardNumber, playerName, cardType.
   `;
 
-  const { object: cards } = await generateObject({
+  const { output: cards } = await generateText({
     model: createGeminiModel(),
-    system: systemPrompt,
+    instructions: systemPrompt,
     prompt: checklistData,
-    schema: cardsSchema,
+    output: Output.array({ element: cardSchema }),
   }).catch((error) => {
     if (isGeminiModelUnavailableError(error)) {
       throw new Error(GEMINI_MODEL_UNAVAILABLE_MESSAGE);
