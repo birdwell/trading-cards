@@ -24,7 +24,7 @@ function DeleteConfirmation({
   isDeleting,
 }: DeleteConfirmationProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-xs">
       <div className="mx-4 w-full max-w-sm rounded-lg border border-border bg-card p-4">
         <p className="text-sm font-semibold">Delete card</p>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -96,7 +96,7 @@ export default function EditSetCards({ cards, setId }: EditSetCardsProps) {
 
   return (
     <>
-      <div className="binder max-h-[32rem] overflow-y-auto">
+      <div className="binder max-h-128 overflow-y-auto">
         {sorted.map((card) => (
           <div
             key={card.id}

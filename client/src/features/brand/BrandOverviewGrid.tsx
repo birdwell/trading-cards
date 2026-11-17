@@ -49,7 +49,7 @@ function BrandRow({
     >
       <Link
         href={`/brands/${encodeURIComponent(brand.brand)}`}
-        className="group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-white/[0.03] focus-visible:-outline-offset-2 sm:gap-4 sm:px-5"
+        className="group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-white/3 focus-visible:-outline-offset-2 sm:gap-4 sm:px-5"
       >
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline justify-between gap-3">

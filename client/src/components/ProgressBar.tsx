@@ -24,10 +24,10 @@ export default function ProgressBar({
   const getColorClasses = (percentage: number) => {
     if (!colorCoded) return "";
     
-    if (percentage >= 80) return "bg-green-100/50 dark:bg-green-900/10 [&>[data-slot=progress-indicator]]:bg-green-500";
-    if (percentage >= 60) return "bg-yellow-100/50 dark:bg-yellow-900/10 [&>[data-slot=progress-indicator]]:bg-yellow-500";
-    if (percentage >= 40) return "bg-orange-100/50 dark:bg-orange-900/10 [&>[data-slot=progress-indicator]]:bg-orange-500";
-    return "bg-red-100/50 dark:bg-red-900/10 [&>[data-slot=progress-indicator]]:bg-red-500";
+    if (percentage >= 80) return "bg-green-100/50 dark:bg-green-900/10 *:data-[slot=progress-indicator]:bg-green-500";
+    if (percentage >= 60) return "bg-yellow-100/50 dark:bg-yellow-900/10 *:data-[slot=progress-indicator]:bg-yellow-500";
+    if (percentage >= 40) return "bg-orange-100/50 dark:bg-orange-900/10 *:data-[slot=progress-indicator]:bg-orange-500";
+    return "bg-red-100/50 dark:bg-red-900/10 *:data-[slot=progress-indicator]:bg-red-500";
   };
   
   return (

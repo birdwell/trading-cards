@@ -37,7 +37,7 @@ export default function EditSetForm({
           required
           className={cn(
             "h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm",
-            "outline-none transition-colors placeholder:text-muted-foreground focus:border-ring",
+            "outline-hidden transition-colors placeholder:text-muted-foreground focus:border-ring",
             "disabled:opacity-50"
           )}
         />
@@ -57,7 +57,7 @@ export default function EditSetForm({
           disabled={isUpdating}
           className={cn(
             "h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground",
-            "outline-none transition-colors focus:border-ring",
+            "outline-hidden transition-colors focus:border-ring",
             "disabled:opacity-50"
           )}
         >

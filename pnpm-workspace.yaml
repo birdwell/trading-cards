@@ -1,2 +1,23 @@
 packages:
   - client
+
+allowBuilds:
+  "@parcel/watcher": true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+
+# These Clerk releases were published inside pnpm's minimum release age.
+minimumReleaseAgeExclude:
+  - '@clerk/backend@3.30.0'
+  - '@clerk/nextjs@7.10.1'
+  - '@clerk/react@6.18.9'
+  - '@clerk/shared@4.46.0'
+
+permissions:
+  '@trpc/client':
+    skills: false
+  '@trpc/server':
+    skills: false
+  '@trpc/tanstack-react-query':
+    skills: false

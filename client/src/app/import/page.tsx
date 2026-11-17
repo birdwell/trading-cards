@@ -44,7 +44,7 @@ export default function ImportPage() {
                   placeholder="https://www.beckett.com/news/..."
                   required
                   autoFocus
-                  className="h-12 w-full rounded-md border border-input bg-transparent px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-ring"
+                  className="h-12 w-full rounded-md border border-input bg-transparent px-4 text-sm outline-hidden transition-colors placeholder:text-muted-foreground focus:border-ring"
                 />
                 <p className="mt-2 text-xs text-muted-foreground">
                   The article must include a downloadable checklist.

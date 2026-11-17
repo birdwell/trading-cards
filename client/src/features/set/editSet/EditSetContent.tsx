@@ -31,7 +31,7 @@ function DeleteAllVariantsConfirmation({
   isDeleting,
 }: DeleteAllVariantsConfirmationProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-xs">
       <div className="mx-4 w-full max-w-sm rounded-lg border border-border bg-card p-4">
         <p className="text-sm font-semibold">Delete all variants</p>
         <p className="mt-2 text-sm text-muted-foreground">
