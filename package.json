@@ -22,7 +22,7 @@
     "db:migrate-sqlite": "tsx scripts/migrate-sqlite-to-postgres.ts"
   },
   "dependencies": {
-    "@clerk/backend": "^3.31.1",
+    "@clerk/backend": "^3.31.2",
     "@trpc/client": "11.29.5",
     "@trpc/server": "11.29.5",
     "@types/node": "^22.20.5",
